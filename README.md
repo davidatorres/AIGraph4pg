@@ -10,7 +10,7 @@ This project is similar to the [CosmosAIGraph](https://aka.ms/caig)
 project as it demonstrates the **GraphRAG** and **OmniRAG** patterns,
 but with **Azure Database for PostgreSQL** instead of **Azure Cosmos DB**.
 
-## Specifically, this reference application demonstrates the following
+## Specifically, this reference application demonstrates the following:
 
 - Using the Azure Database for PostgreSQL with **Python**
 - Provisioning automation with the **az CLI**
@@ -65,6 +65,7 @@ Directory/File             Description
 │   └── pypi               The primary curated dataset of 10,000+ Python libraries
 ├── docs                   User documentation, quick start, faq, etc
 └── python                 The Python-based implementation
+    ├── config             Contains file sample_queries.txt, used by the Web UI
     ├── docker             Dockerfile and docker-compose.yml for local desktop execution
     ├── htmlcov            Unit test code coverage reports; git-ignored
     ├── ontologies         Unused, reference OWL file from the CosmosAIGraph project
@@ -102,14 +103,21 @@ Directory/File             Description
     - Embedding generation with Azure OpenAI
     - Graph creation with Apache AGE
     - Web UI for traditional SQL queries
+    - Web UI for openCypher queries
     - Web UI for vector search SQL queries
+    - Logo image creation
   - TODO:
-    - Richer openCypher queries
-    - Web UI for graph queries with openCypher, and visualization with D3.js
+    - Example JSONB queries
+    - Richer openCypher queries for graph traversal
+    - Web UI for graph queries with openCypher, and D3.js visualization
     - Docker image on DockerHub
+    - Architecture Diagram, add to the About page
+    - Revine the user docs
 
 - TBD: Optimize DB load process
 - TBD: Generative AI for openCypher queries
+- TBD: Utilize the azure_ai extension
+- TBD: Utilize the semantic ranker
 - TBD: DiskANN vector search
 - TBD: In-database vectorization with a SLM
 - TBD: Fabric Mirroring integration
