@@ -1,5 +1,3 @@
-# AIGraph4pg
-
 <p align="center">
   <img src="python/static/img/AIGraph4pg.png" width="99%">
 </p>
