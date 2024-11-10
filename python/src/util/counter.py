@@ -1,4 +1,6 @@
-""" module counter.py, Chris Joakim, Microsoft, 2023 """
+# This class implements a simple key-based counter, often used
+# for data exploration and wrangling.
+# Chris Joakim, Microsoft
 
 
 class Counter:

@@ -1,6 +1,4 @@
 import logging
-import os
-import pytest
 
 from src.util.sample_queries import SampleQueries
 
@@ -18,8 +16,8 @@ def test_read_queries():
         assert len(q["text"]) > 10
         logging.info(q)
 
-        if q["name"] == "CYPHER: List the AGE search_path":
+        if q["name"] == "SQL: PostgreSQL Extensions":
             found_age_search_path = True
-            assert q["text"] == 'SET search_path = ag_catalog, "$user", public;'
+            assert q["text"] == "SELECT oid, extname, extversion FROM pg_extension;"
 
     assert found_age_search_path == True

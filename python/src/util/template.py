@@ -1,5 +1,9 @@
 import jinja2
 
+# This class is used to create text content using jinja2 templates,
+# such as complex SQL with embedded openCypher queries.
+# Chris Joakim, Microsoft
+
 
 class Template:
     """

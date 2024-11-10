@@ -8,7 +8,6 @@ Usage:
     python dev.py gen_docker_compose_fragment
     python dev.py gen_docker_requirements_txt
     python dev.py gen_environment_variables_md
-    python dev.py gen_queries_json
     python dev.py gen_all
     python dev.py create_libraries_cypher_load_statements 999999
     python dev.py encrypt_your_env_values tmp/envvars.txt
@@ -248,47 +247,12 @@ def gen_environment_variables_md():
     FS.write_lines(lines, "../docs/environment_variables.md")
 
 
-def gen_queries_json():
-    queries = list()
-
-    queries.append(
-        {
-            "type": "sql",
-            "name": "Count Library rows in table",
-            "text": "select count(*) from libraries",
-        }
-    )
-
-    queries.append(
-        {
-            "type": "cypher",
-            "name": "Count Library vertices in graph",
-            "text": """
-SELECT * FROM ag_catalog.cypher('libraries1',
-    $$ MATCH (lib:Library ) RETURN count(*) $$)
-as (v agtype);""",
-        }
-    )
-    queries.append(
-        {
-            "type": "cypher",
-            "name": "Count Developer vertices in graph",
-            "text": """
-SELECT * FROM ag_catalog.cypher('libraries1',
-    $$ MATCH (lib:Developer ) RETURN count(*) $$)
-as (v agtype);""",
-        }
-    )
-    FS.write_json(queries, "config/queries.json")
-
-
 def gen_all():
     gen_dotenv_examples()
     gen_ps1_env_var_script()
     gen_docker_compose_fragment()
     gen_docker_requirements_txt()
     gen_environment_variables_md()
-    gen_queries_json()
 
 
 def encryption_example():
@@ -602,8 +566,6 @@ if __name__ == "__main__":
                 gen_docker_requirements_txt()
             elif func == "gen_environment_variables_md":
                 gen_environment_variables_md()
-            elif func == "gen_queries_json":
-                gen_queries_json()
             elif func == "gen_all":
                 gen_all()
             elif func == "encryption_example":

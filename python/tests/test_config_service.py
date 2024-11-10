@@ -62,7 +62,7 @@ def test_boolean_arg():
 
 
 def test_project_version():
-    assert ConfigService.project_version() == "1.0.0, November 2024"
+    assert ConfigService.project_version() == "0.9.0, 2024/11/10"
 
 
 def test_defined_and_sample_environment_variables():
