@@ -96,13 +96,19 @@ Directory/File             Description
 ## Project Roadmap
 
 - November 2024: Initial Release
-  - Vector search with pgvector
-  - Embedding generation with Azure OpenAI
-  - Graph creation with Apache AGE
-  - Web UI for traditional SQL queries
-  - Web UI for vector search SQL queries
-  - Web UI for graph queries with openCypher, and visualization with D3.js
+  - Completed:
+    - DB load process
+    - Vector search with pgvector 
+    - Embedding generation with Azure OpenAI
+    - Graph creation with Apache AGE
+    - Web UI for traditional SQL queries
+    - Web UI for vector search SQL queries
+  - TODO:
+    - Richer openCypher queries
+    - Web UI for graph queries with openCypher, and visualization with D3.js
+    - Docker image on DockerHub
 
+- TBD: Optimize DB load process
 - TBD: Generative AI for openCypher queries
 - TBD: DiskANN vector search
 - TBD: In-database vectorization with a SLM
