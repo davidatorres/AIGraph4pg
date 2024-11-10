@@ -55,6 +55,36 @@ This reference application uses **Azure cloud-based data services**
 but the **application code runs from your desktop**, for demonstration purposes.
 The application code can run either as a Python process, or a Docker image.
 
+### Project Directory Structure
+
+```
+Directory/File             Description
+
+├── az                     az CLI deployment script for Azure PostgreSQL
+├── data
+│   ├── cypher             Generated statements, zipped, to load the Apache AGE graphs
+│   ├── openflights        Smaller dataset of US Air travel
+│   └── pypi               The primary curated dataset of 10,000+ Python libraries
+├── docs                   User documentation, quick start, faq, etc
+└── python                 The Python-based implementation
+    ├── docker             Dockerfile and docker-compose.yml for local desktop execution
+    ├── htmlcov            Unit test code coverage reports; git-ignored
+    ├── ontologies         Unused, reference OWL file from the CosmosAIGraph project
+    ├── sql                Miscellaneous SQL, DDL, indexing scripts
+    ├── src                The primary Python source code
+    ├── static             Static assets used in the Web app
+    ├── templates          Jinga2 templates used in text generation
+    ├── tests              Unit tests
+    └── views              Web app HTML views/templates
+    ├── main.py            The "console app" part of this application
+    ├── requirements.in    The base list of Python requirements, used by venv.ps1/venv.sh
+    ├── venv.ps1           Windows PowerShell script to create the Python virtual environment
+    ├── venv.sh            Linux/macOS script to create the Python virtual environment
+    ├── webapp.py          The Web application, built with the FastAPI framework
+    ├── webapp.ps1         Windows PowerShell script to start the Web app
+    └── webapp.sh          Linux/macOS script to start the Web app
+```
+
 ## What's not in this Project?
 
 - Bicep or other scripts to deploy the application code to Azure
