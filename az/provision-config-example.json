@@ -1,0 +1,12 @@
+{
+    "azure_subscription": "your-azure-subscription-id",
+    "azure_region": "eastus",
+    "resource_group": "your-resource-group",
+    "pg_server_name": "your-azure-postgresql-server-name",
+    "pg_sku_name": "Standard_D2s_v3",
+    "pg_database_name": "aigraph",
+    "pg_admin_user_name": "your-id-or-admin-id",
+    "pg_admin_user_pass": "<secret>",
+    "pg_high_availability": "SameZone",
+    "az_verbose_flag": ""
+}
