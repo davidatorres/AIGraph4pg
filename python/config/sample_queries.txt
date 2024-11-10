@@ -1,0 +1,92 @@
+# This file defines the set of common queries used in the UI and is
+# optimized for query editing, especially for multi-line query text values.
+# Each query contains a --name, --text (n-lines), and --end marker.
+# The --name value should be prefixed with either SQL: or CYPHER:.
+# At runtime this file is read by class SampleQueries.
+
+
+--name SQL: PostgreSQL Extensions
+--text
+SELECT oid, extname, extversion FROM pg_extension;
+--end
+
+
+--name SQL: PostgreSQL Available Extensions
+--text
+SELECT name, default_version, installed_version, comment FROM pg_available_extensions
+ where installed_version is null;
+--end
+
+
+--name SQL: Library table columns
+--text
+SELECT ordinal_position, table_catalog, table_name, column_name, data_type, character_maximum_length
+  FROM information_schema.columns
+  WHERE table_name = 'libraries'
+  ORDER BY ordinal_position;
+--end
+
+
+--name SQL: Count Library rows in table
+--text
+select count(*) from libraries;
+--end
+
+--name SQL: Library rows in table
+--text
+select id, name, libtype from libraries offset 0 limit 10;
+--end
+
+
+--name CYPHER: List the ag pg_types
+--text
+SELECT typelem FROM pg_type; 
+--end
+
+
+--name CYPHER: List the AGE graphs
+--text
+SELECT * FROM ag_catalog.ag_graph;
+--end
+
+
+--name CYPHER: List the AGE graph labels
+--text
+SELECT * FROM ag_catalog.ag_label;
+--end
+
+
+--name CYPHER: List the AGE graphs
+--text
+SELECT * FROM ag_catalog.ag_graph;
+--end
+
+
+--name CYPHER: Count Library vertices in graph
+--text
+SELECT * FROM ag_catalog.cypher('libraries1',
+  $$ MATCH (lib:Library ) RETURN count(*) $$)
+  as (v agtype);
+--end
+
+
+--name CYPHER: Count Developer vertices in graph
+--text
+SELECT * FROM ag_catalog.cypher('libraries1',
+  $$ MATCH (dev:Developer ) RETURN count(*) $$)
+  as (v agtype);
+--end
+
+--name CYPHER: Library vertices in graph
+--text
+SELECT * FROM ag_catalog.cypher('libraries1',
+  $$ MATCH (lib:Library) RETURN lib limit 10 $$)
+  as (v agtype);
+--end
+
+--name CYPHER: Developer vertices in graph
+--text
+SELECT * FROM ag_catalog.cypher('libraries1',
+  $$ MATCH (dev:Developer) RETURN dev limit 10 $$)
+  as (v agtype);
+--end

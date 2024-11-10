@@ -1,0 +1,4 @@
+SELECT * FROM cypher('{{graphname}}', $$ 
+CREATE (:Developer {
+name: '{{name}}'
+}) $$) as (v agtype);

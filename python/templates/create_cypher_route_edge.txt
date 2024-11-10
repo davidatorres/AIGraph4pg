@@ -1,0 +1,6 @@
+SELECT * FROM cypher('{{graphname}}', $$ 
+MATCH (a:Airport), (b:Airport)
+WHERE a.iata = '{{iata1}}' AND b.property = '{{iata2}}'
+CREATE (a)-[e:route  {airline: '{{airline}}'}]->(b)
+RETURN e
+$$) as (e agtype);

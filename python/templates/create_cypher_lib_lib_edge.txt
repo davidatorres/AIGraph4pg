@@ -1,0 +1,6 @@
+SELECT * FROM cypher('{{graphname}}', $$ 
+MATCH (a:Library), (b:Library)
+WHERE a.name = '{{lib1}}' AND b.name = '{{lib2}}'
+CREATE (a)-[e:{{relname}}]->(b)
+RETURN e
+$$) as (e agtype);

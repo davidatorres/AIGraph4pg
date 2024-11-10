@@ -1,0 +1,30 @@
+# Docker Compose script to run this solution locally.
+# Use of this script:
+#   docker compose -f docker/docker-compose.yml up
+#   docker compose -f docker/docker-compose.yml down (in a second terminal window)
+# Chris Joakim, Microsoft
+
+services:
+
+  web_app:
+    image: cjoakim/aigraph4pg:latest
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./tmp:/tmp:rw
+    environment:
+      AIG4PG_ENCRYPTION_SYMMETRIC_KEY:    $AIG4PG_ENCRYPTION_SYMMETRIC_KEY
+      AIG4PG_LOG_LEVEL:                   $AIG4PG_LOG_LEVEL
+      AIG4PG_OPENAI_COMPLETIONS_DEP:      $AIG4PG_OPENAI_COMPLETIONS_DEP
+      AIG4PG_OPENAI_EMBEDDINGS_DEP:       $AIG4PG_OPENAI_EMBEDDINGS_DEP
+      AIG4PG_OPENAI_KEY:                  $AIG4PG_OPENAI_KEY
+      AIG4PG_OPENAI_URL:                  $AIG4PG_OPENAI_URL
+      AIG4PG_PG_FLEX_DB:                  $AIG4PG_PG_FLEX_DB
+      AIG4PG_PG_FLEX_PASS:                $AIG4PG_PG_FLEX_PASS
+      AIG4PG_PG_FLEX_PORT:                $AIG4PG_PG_FLEX_PORT
+      AIG4PG_PG_FLEX_SERVER:              $AIG4PG_PG_FLEX_SERVER
+      AIG4PG_PG_FLEX_USER:                $AIG4PG_PG_FLEX_USER
+      PORT:                               8000
+      WEB_CONCURRENCY:                    1
+
+# WEB_CONCURRENCY relates to uvicorn and the --workers count; see https://www.uvicorn.org

@@ -1,0 +1,8 @@
+SELECT * FROM cypher('{{graphname}}', $$ 
+CREATE (:Library {
+name: '{{name}}',
+libtype: '{{libtype}}',
+license: '{{license}}',
+keywords: '{{keywords}}',
+release_count: {{release_count}}
+}) $$) as (v agtype);

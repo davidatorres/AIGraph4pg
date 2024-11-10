@@ -1,0 +1,6 @@
+SELECT * FROM cypher('{{graphname}}', $$ 
+CREATE (:Airline {
+airline_id: '{{airline_id}}',
+iata: '{{iata}}',
+name: '{{name}}'
+}) $$) as (v agtype);

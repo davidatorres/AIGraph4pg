@@ -82,7 +82,8 @@
                 **/target/,
                 **/tmp/,
                 **/venv/,
-                **/data/cypher/*.json" />
+                **/data/cypher/*.json,
+                **/data/cypher/*.txt" />
 
         <echo message="file created: ${_zipFilename}" />
         <echo message="done." />

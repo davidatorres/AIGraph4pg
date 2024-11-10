@@ -1,0 +1,36 @@
+# Python requirements file for this application.
+# The libraries will be downloaded from PyPI: https://pypi.org
+# when the venv.ps1 or venv.sh script is executed.
+# Chris Joakim, Microsoft
+
+Faker
+Jinja2
+#apache-age-python
+
+azure-identity
+azure-storage-blob
+black
+cryptography
+docopt
+fastapi
+hypercorn
+itsdangerous
+multidict
+openai
+# psutil
+
+#psycopg2-binary
+#psycopg
+#psycopg --no-binary :all: psycopg
+psycopg[binary,pool]
+
+pytest-asyncio
+pytest-cov
+pytest
+python-dotenv
+python-multipart
+semantic-kernel
+#SQLAlchemy
+tiktoken
+uvicorn
+xmlformatter

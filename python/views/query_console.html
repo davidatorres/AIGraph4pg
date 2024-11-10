@@ -1,0 +1,106 @@
+{% extends "layout.html" %}
+{% block title %} Query Console {% endblock %}
+
+{% block content %}
+<div class="container">
+  <h5>Query Console</h5>
+  <br>
+  <form method="post" id="form" name="form">
+    <div class="dropdown">
+      <button class="btn btn-outline-primary mb-3 dropdown-toggle" type="button"
+        id="sample_query_btn" data-bs-toggle="dropdown" aria-expanded="false">
+        Sample Queries
+      </button>
+      <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+        {% for query in sample_queries %}
+        <li><a class="dropdown-item" href="#">{{ query['name'] }}</a></li>
+        {% endfor %}
+      </ul>
+    </div>
+    <div class="mb-3">
+      <label for="query_text" class="form-label"></label>
+      <textarea rows='4' class="form-control fs-6" id="query_text" name="query_text" value="{{ query_text }}">{{ query_text }}</textarea>
+    </div>
+
+    <!--
+    <div class="mb-3">
+      <label for="bom_query" class="form-label">Enter a library name, and a depth integer, for a Bill-of-Materials traversal:</label>
+      <input type="text" class="form-control" id="bom_query" name="bom_query" value="{{ bom_query }}" placeholder="flask 3"></input>
+    </div>
+    -->
+
+    <div class="mb-6">
+      <button type="submit" id="submit_button" name="submit_button" class="btn btn-outline-primary mb-3">Submit</button>
+    </div>
+    <p class="text-danger fw-bold" id="error_message" name="error_message"></p>
+  </form>
+</div>
+
+<hr>
+
+<div class="container fs-5" id="results_div" name="results_div">
+  <h5>{{ results_message }}</h5>
+  <pre>
+  <code>
+{{ results }}
+  </code>
+  </pre>
+  <br>
+  <br>
+</div>
+
+<hr/>
+
+<div class="container-fluid" id="d3viz" name="d3viz">
+  <svg style="width:95%;height:1024px;">
+      <g></g>
+  </svg>
+</div>
+
+{% endblock %}
+
+{% block js %}
+
+<script type="application/text" id="queries">
+{{ queries_json}}
+</script>
+
+<script>
+const form = document.getElementById("form");
+const query_button  = document.getElementById("sample_query_btn");
+const query_text    = document.getElementById("query_text");
+const submit_button = document.getElementById("submit_button");
+const dropdownItems = document.querySelectorAll('.dropdown-item');
+
+var queries_list = {};
+$.getJSON( "/sample_queries", function(data) {
+  queries_list = data;
+});
+
+submit_button.addEventListener('click', 
+    function(event) {
+      event.preventDefault();
+      submit_button.disabled = true;
+      submit_button.textContent = "Processing...";
+      form.submit();
+    }
+);
+
+$(document).ready(function() {
+  console.log("document ready");
+  dropdownItems.forEach(item => {
+    item.addEventListener('click', function(event) {
+      selected_query_name = event.currentTarget.innerHTML;
+      queries_list.forEach(query => {
+        if (query["name"].includes(selected_query_name)) {
+          query_text.value = query["text"];
+        }
+      });
+      return;
+    });
+  });
+});
+
+</script>
+
+{% endblock %}
