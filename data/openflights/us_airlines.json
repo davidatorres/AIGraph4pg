@@ -1,0 +1,712 @@
+{
+  "2O": {
+    "airline_id": "146",
+    "name": "Air Salone",
+    "alias": "",
+    "iata": "2O",
+    "icao": "",
+    "callsign": "",
+    "country": "Sierra Leone",
+    "active": "Y"
+  },
+  "3E": {
+    "airline_id": "10739",
+    "name": "Air Choice One",
+    "alias": "",
+    "iata": "3E",
+    "icao": "",
+    "callsign": "",
+    "country": "United States",
+    "active": "Y"
+  },
+  "3F": {
+    "airline_id": "16262",
+    "name": "Fly Colombia ( Interliging Flights )",
+    "alias": "",
+    "iata": "3F",
+    "icao": "3FF",
+    "callsign": "",
+    "country": "Colombia",
+    "active": "Y"
+  },
+  "3M": {
+    "airline_id": "20710",
+    "name": "Silver Airways (3M)",
+    "alias": "",
+    "iata": "3M",
+    "icao": "",
+    "callsign": "Silver Wings",
+    "country": "United States",
+    "active": "Y"
+  },
+  "4B": {
+    "airline_id": "20565",
+    "name": "Boutique Air (Priv)",
+    "alias": "",
+    "iata": "4B",
+    "icao": "BTQ",
+    "callsign": "",
+    "country": "United States",
+    "active": "Y"
+  },
+  "4Y": {
+    "airline_id": "1173",
+    "name": "Airbus France",
+    "alias": "",
+    "iata": "4Y",
+    "icao": "RBU",
+    "callsign": "AIRBUS FRANCE",
+    "country": "France",
+    "active": "N"
+  },
+  "7H": {
+    "airline_id": "16726",
+    "name": "Era Alaska",
+    "alias": "",
+    "iata": "7H",
+    "icao": "ERR",
+    "callsign": "ERAH",
+    "country": "United States",
+    "active": "Y"
+  },
+  "8D": {
+    "airline_id": "4764",
+    "name": "Servant Air",
+    "alias": "",
+    "iata": "8D",
+    "icao": "",
+    "callsign": "",
+    "country": "United States",
+    "active": "N"
+  },
+  "8E": {
+    "airline_id": "1472",
+    "name": "Bering Air",
+    "alias": "",
+    "iata": "8E",
+    "icao": "BRG",
+    "callsign": "BERING AIR",
+    "country": "United States",
+    "active": "Y"
+  },
+  "8V": {
+    "airline_id": "5473",
+    "name": "Wright Air Service",
+    "alias": "",
+    "iata": "8V",
+    "icao": "WRF",
+    "callsign": "WRIGHT FLYER",
+    "country": "United States",
+    "active": "N"
+  },
+  "9E": {
+    "airline_id": "3976",
+    "name": "Pinnacle Airlines",
+    "alias": "",
+    "iata": "9E",
+    "icao": "FLG",
+    "callsign": "FLAGSHIP",
+    "country": "United States",
+    "active": "Y"
+  },
+  "9K": {
+    "airline_id": "1629",
+    "name": "Cape Air",
+    "alias": "",
+    "iata": "9K",
+    "icao": "KAP",
+    "callsign": "CAIR",
+    "country": "United States",
+    "active": "Y"
+  },
+  "AA": {
+    "airline_id": "24",
+    "name": "American Airlines",
+    "alias": "",
+    "iata": "AA",
+    "icao": "AAL",
+    "callsign": "AMERICAN",
+    "country": "United States",
+    "active": "Y"
+  },
+  "AC": {
+    "airline_id": "330",
+    "name": "Air Canada",
+    "alias": "",
+    "iata": "AC",
+    "icao": "ACA",
+    "callsign": "AIR CANADA",
+    "country": "Canada",
+    "active": "Y"
+  },
+  "AF": {
+    "airline_id": "137",
+    "name": "Air France",
+    "alias": "",
+    "iata": "AF",
+    "icao": "AFR",
+    "callsign": "AIRFRANS",
+    "country": "France",
+    "active": "Y"
+  },
+  "AM": {
+    "airline_id": "321",
+    "name": "AeroM\u00e9xico",
+    "alias": "",
+    "iata": "AM",
+    "icao": "AMX",
+    "callsign": "AEROMEXICO",
+    "country": "Mexico",
+    "active": "Y"
+  },
+  "AS": {
+    "airline_id": "439",
+    "name": "Alaska Airlines",
+    "alias": "",
+    "iata": "AS",
+    "icao": "ASA",
+    "callsign": " Inc.",
+    "country": "ALASKA",
+    "active": "Y"
+  },
+  "AZ": {
+    "airline_id": "596",
+    "name": "Alitalia",
+    "alias": "",
+    "iata": "AZ",
+    "icao": "AZA",
+    "callsign": "ALITALIA",
+    "country": "Italy",
+    "active": "Y"
+  },
+  "B6": {
+    "airline_id": "3029",
+    "name": "JetBlue Airways",
+    "alias": "",
+    "iata": "B6",
+    "icao": "JBU",
+    "callsign": "JETBLUE",
+    "country": "United States",
+    "active": "Y"
+  },
+  "BA": {
+    "airline_id": "1355",
+    "name": "British Airways",
+    "alias": "",
+    "iata": "BA",
+    "icao": "BAW",
+    "callsign": "SPEEDBIRD",
+    "country": "United Kingdom",
+    "active": "Y"
+  },
+  "CA": {
+    "airline_id": "751",
+    "name": "Air China",
+    "alias": "",
+    "iata": "CA",
+    "icao": "CCA",
+    "callsign": "AIR CHINA",
+    "country": "China",
+    "active": "Y"
+  },
+  "CI": {
+    "airline_id": "1756",
+    "name": "China Airlines",
+    "alias": "",
+    "iata": "CI",
+    "icao": "CAL",
+    "callsign": "DYNASTY",
+    "country": "Taiwan",
+    "active": "Y"
+  },
+  "CM": {
+    "airline_id": "1889",
+    "name": "Copa Airlines",
+    "alias": "",
+    "iata": "CM",
+    "icao": "CMP",
+    "callsign": "COPA",
+    "country": "Panama",
+    "active": "Y"
+  },
+  "CX": {
+    "airline_id": "1680",
+    "name": "Cathay Pacific",
+    "alias": "",
+    "iata": "CX",
+    "icao": "CPA",
+    "callsign": "CATHAY",
+    "country": "Hong Kong SAR of China",
+    "active": "Y"
+  },
+  "DL": {
+    "airline_id": "2009",
+    "name": "Delta Air Lines",
+    "alias": "",
+    "iata": "DL",
+    "icao": "DAL",
+    "callsign": "DELTA",
+    "country": "United States",
+    "active": "Y"
+  },
+  "EI": {
+    "airline_id": "837",
+    "name": "Aer Lingus",
+    "alias": "",
+    "iata": "EI",
+    "icao": "EIN",
+    "callsign": "SHAMROCK",
+    "country": "Ireland",
+    "active": "Y"
+  },
+  "EY": {
+    "airline_id": "2222",
+    "name": "Etihad Airways",
+    "alias": "",
+    "iata": "EY",
+    "icao": "ETD",
+    "callsign": "ETIHAD",
+    "country": "United Arab Emirates",
+    "active": "Y"
+  },
+  "F9": {
+    "airline_id": "2468",
+    "name": "Frontier Airlines",
+    "alias": "",
+    "iata": "F9",
+    "icao": "FFT",
+    "callsign": "FRONTIER FLIGHT",
+    "country": "United States",
+    "active": "Y"
+  },
+  "FL": {
+    "airline_id": "1316",
+    "name": "AirTran Airways",
+    "alias": "",
+    "iata": "FL",
+    "icao": "TRS",
+    "callsign": "CITRUS",
+    "country": "United States",
+    "active": "Y"
+  },
+  "G4": {
+    "airline_id": "35",
+    "name": "Allegiant Air",
+    "alias": "",
+    "iata": "G4",
+    "icao": "AAY",
+    "callsign": "ALLEGIANT",
+    "country": "United States",
+    "active": "Y"
+  },
+  "GV": {
+    "airline_id": "386",
+    "name": "Aero Flight",
+    "alias": "",
+    "iata": "GV",
+    "icao": "ARF",
+    "callsign": "Aero Fox",
+    "country": "Germany",
+    "active": "Y"
+  },
+  "HA": {
+    "airline_id": "2688",
+    "name": "Hawaiian Airlines",
+    "alias": "",
+    "iata": "HA",
+    "icao": "HAL",
+    "callsign": "HAWAIIAN",
+    "country": "United States",
+    "active": "Y"
+  },
+  "I4": {
+    "airline_id": "19944",
+    "name": "International AirLink",
+    "alias": "",
+    "iata": "I4",
+    "icao": "",
+    "callsign": "",
+    "country": "Jamaica",
+    "active": "Y"
+  },
+  "IB": {
+    "airline_id": "2822",
+    "name": "Iberia Airlines",
+    "alias": "",
+    "iata": "IB",
+    "icao": "IBE",
+    "callsign": "IBERIA",
+    "country": "Spain",
+    "active": "Y"
+  },
+  "J5": {
+    "airline_id": "10912",
+    "name": "Alaska Seaplane Service",
+    "alias": "",
+    "iata": "J5",
+    "icao": "",
+    "callsign": "",
+    "country": "United States",
+    "active": "Y"
+  },
+  "JJ": {
+    "airline_id": "4867",
+    "name": "TAM Brazilian Airlines",
+    "alias": "",
+    "iata": "JJ",
+    "icao": "TAM",
+    "callsign": "TAM",
+    "country": "Brazil",
+    "active": "Y"
+  },
+  "JL": {
+    "airline_id": "2988",
+    "name": "Japan Airlines Domestic",
+    "alias": "",
+    "iata": "JL",
+    "icao": "JAL",
+    "callsign": "J-BIRD",
+    "country": "Japan",
+    "active": "Y"
+  },
+  "K3": {
+    "airline_id": "20963",
+    "name": "Atlantic Air Cargo",
+    "alias": "",
+    "iata": "K3",
+    "icao": "",
+    "callsign": "",
+    "country": "United States",
+    "active": "N"
+  },
+  "K5": {
+    "airline_id": "10765",
+    "name": "SeaPort Airlines",
+    "alias": "",
+    "iata": "K5",
+    "icao": "SQH",
+    "callsign": "SASQUATCH",
+    "country": "United States",
+    "active": "Y"
+  },
+  "KE": {
+    "airline_id": "3163",
+    "name": "Korean Air",
+    "alias": "",
+    "iata": "KE",
+    "icao": "KAL",
+    "callsign": "KOREANAIR",
+    "country": "Republic of Korea",
+    "active": "Y"
+  },
+  "KL": {
+    "airline_id": "3090",
+    "name": "KLM Royal Dutch Airlines",
+    "alias": "",
+    "iata": "KL",
+    "icao": "KLM",
+    "callsign": "KLM",
+    "country": "Netherlands",
+    "active": "Y"
+  },
+  "KS": {
+    "airline_id": "3935",
+    "name": "Peninsula Airways",
+    "alias": "",
+    "iata": "KS",
+    "icao": "PEN",
+    "callsign": "PENINSULA",
+    "country": "United States",
+    "active": "Y"
+  },
+  "LH": {
+    "airline_id": "3321",
+    "name": "Lufthansa Cargo",
+    "alias": "",
+    "iata": "LH",
+    "icao": "GEC",
+    "callsign": "LUFTHANSA CARGO",
+    "country": "Germany",
+    "active": "Y"
+  },
+  "LW": {
+    "airline_id": "3865",
+    "name": "Pacific Wings",
+    "alias": "",
+    "iata": "LW",
+    "icao": "NMI",
+    "callsign": "TSUNAMI",
+    "country": "United States",
+    "active": "Y"
+  },
+  "M5": {
+    "airline_id": "3123",
+    "name": "Kenmore Air",
+    "alias": "",
+    "iata": "M5",
+    "icao": "KEN",
+    "callsign": "KENMORE",
+    "country": "United States",
+    "active": "Y"
+  },
+  "MH": {
+    "airline_id": "3378",
+    "name": "Malaysia Airlines",
+    "alias": "",
+    "iata": "MH",
+    "icao": "MAS",
+    "callsign": "MALAYSIAN",
+    "country": "Malaysia",
+    "active": "Y"
+  },
+  "MW": {
+    "airline_id": "3437",
+    "name": "Maya Island Air",
+    "alias": "",
+    "iata": "MW",
+    "icao": "MYD",
+    "callsign": "MYLAND",
+    "country": "Belize",
+    "active": "Y"
+  },
+  "NH": {
+    "airline_id": "324",
+    "name": "All Nippon Airways",
+    "alias": "ANA All Nippon Airways",
+    "iata": "NH",
+    "icao": "ANA",
+    "callsign": "ALL NIPPON",
+    "country": "Japan",
+    "active": "Y"
+  },
+  "NK": {
+    "airline_id": "4687",
+    "name": "Spirit Airlines",
+    "alias": "",
+    "iata": "NK",
+    "icao": "NKS",
+    "callsign": "SPIRIT WINGS",
+    "country": "United States",
+    "active": "Y"
+  },
+  "NZ": {
+    "airline_id": "345",
+    "name": "Air New Zealand",
+    "alias": "",
+    "iata": "NZ",
+    "icao": "ANZ",
+    "callsign": "NEW ZEALAND",
+    "country": "New Zealand",
+    "active": "Y"
+  },
+  "OR": {
+    "airline_id": "1299",
+    "name": "Arkefly",
+    "alias": "",
+    "iata": "OR",
+    "icao": "TFL",
+    "callsign": "ARKEFLY",
+    "country": "Netherlands",
+    "active": "Y"
+  },
+  "OZ": {
+    "airline_id": "3830",
+    "name": "Ozark Air Lines",
+    "alias": "",
+    "iata": "OZ",
+    "icao": "OZR",
+    "callsign": "OZARK",
+    "country": "United States",
+    "active": "N"
+  },
+  "QF": {
+    "airline_id": "4089",
+    "name": "Qantas",
+    "alias": "Qantas Airways",
+    "iata": "QF",
+    "icao": "QFA",
+    "callsign": "QANTAS",
+    "country": "Australia",
+    "active": "Y"
+  },
+  "QR": {
+    "airline_id": "4091",
+    "name": "Qatar Airways",
+    "alias": "",
+    "iata": "QR",
+    "icao": "QTR",
+    "callsign": "QATARI",
+    "country": "Qatar",
+    "active": "Y"
+  },
+  "SQ": {
+    "airline_id": "4464",
+    "name": "Singapore Airlines Cargo",
+    "alias": "",
+    "iata": "SQ",
+    "icao": "SQC",
+    "callsign": "SINGCARGO",
+    "country": "Singapore",
+    "active": "Y"
+  },
+  "SU": {
+    "airline_id": "130",
+    "name": "Aeroflot Russian Airlines",
+    "alias": "",
+    "iata": "SU",
+    "icao": "AFL",
+    "callsign": "AEROFLOT",
+    "country": "Russia",
+    "active": "Y"
+  },
+  "SY": {
+    "airline_id": "4356",
+    "name": "Sun Country Airlines",
+    "alias": "",
+    "iata": "SY",
+    "icao": "SCX",
+    "callsign": "SUN COUNTRY",
+    "country": "United States",
+    "active": "Y"
+  },
+  "TJ": {
+    "airline_id": "18529",
+    "name": "T.J. Air",
+    "alias": "",
+    "iata": "TJ",
+    "icao": "TJA",
+    "callsign": "T.J. Air",
+    "country": "United States",
+    "active": "Y"
+  },
+  "TK": {
+    "airline_id": "4951",
+    "name": "Turkish Airlines",
+    "alias": "",
+    "iata": "TK",
+    "icao": "THY",
+    "callsign": "TURKAIR",
+    "country": "Turkey",
+    "active": "Y"
+  },
+  "UA": {
+    "airline_id": "5209",
+    "name": "United Airlines",
+    "alias": "",
+    "iata": "UA",
+    "icao": "UAL",
+    "callsign": "UNITED",
+    "country": "United States",
+    "active": "Y"
+  },
+  "US": {
+    "airline_id": "5265",
+    "name": "US Airways",
+    "alias": "",
+    "iata": "US",
+    "icao": "USA",
+    "callsign": "U S AIR",
+    "country": "United States",
+    "active": "Y"
+  },
+  "VA": {
+    "airline_id": "5360",
+    "name": "Virgin Australia",
+    "alias": "",
+    "iata": "VA",
+    "icao": "VOZ",
+    "callsign": "VIRGIN",
+    "country": "Australia",
+    "active": "Y"
+  },
+  "VS": {
+    "airline_id": "5347",
+    "name": "Virgin Atlantic Airways",
+    "alias": "",
+    "iata": "VS",
+    "icao": "VIR",
+    "callsign": "VIRGIN",
+    "country": "United Kingdom",
+    "active": "Y"
+  },
+  "VX": {
+    "airline_id": "5331",
+    "name": "Virgin America",
+    "alias": "",
+    "iata": "VX",
+    "icao": "VRD",
+    "callsign": "REDWOOD",
+    "country": "United States",
+    "active": "Y"
+  },
+  "WN": {
+    "airline_id": "4547",
+    "name": "Southwest Airlines",
+    "alias": "",
+    "iata": "WN",
+    "icao": "SWA",
+    "callsign": "SOUTHWEST",
+    "country": "United States",
+    "active": "Y"
+  },
+  "WP": {
+    "airline_id": "8809",
+    "name": "Island Air (WP)",
+    "alias": "",
+    "iata": "WP",
+    "icao": "MKU",
+    "callsign": "",
+    "country": "United States",
+    "active": "Y"
+  },
+  "WS": {
+    "airline_id": "5416",
+    "name": "WestJet",
+    "alias": "",
+    "iata": "WS",
+    "icao": "WJA",
+    "callsign": "WESTJET",
+    "country": "Canada",
+    "active": "Y"
+  },
+  "X7": {
+    "airline_id": "20549",
+    "name": "Atlantic Air Services",
+    "alias": "",
+    "iata": "X7",
+    "icao": "",
+    "callsign": "",
+    "country": "United States",
+    "active": "N"
+  },
+  "YR": {
+    "airline_id": "17519",
+    "name": "SENIC AIRLINES",
+    "alias": "",
+    "iata": "YR",
+    "icao": "",
+    "callsign": "",
+    "country": "United States",
+    "active": "Y"
+  },
+  "Z3": {
+    "airline_id": "1266",
+    "name": "Avient Aviation",
+    "alias": "",
+    "iata": "Z3",
+    "icao": "SMJ",
+    "callsign": "AVAVIA",
+    "country": "Zimbabwe",
+    "active": "Y"
+  },
+  "ZK": {
+    "airline_id": "2607",
+    "name": "Great Lakes Airlines",
+    "alias": "",
+    "iata": "ZK",
+    "icao": "GLA",
+    "callsign": "LAKES AIR",
+    "country": "United States",
+    "active": "Y"
+  }
+}
