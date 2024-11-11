@@ -19,6 +19,7 @@
 
 az/provision-config.json
 data/cypher/*.txt
+data/pg_dumps/*.*
 python/libraries.txt
 python/us_openflights.txt
 
