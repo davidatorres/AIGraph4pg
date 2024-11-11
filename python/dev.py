@@ -569,6 +569,8 @@ def zip_dumps():
         # The output file is large, too large for GitHub,
         # so we write it here to a zip file.
         # See https://git-lfs.com/
+        # Download setup program from https://git-lfs.com/ and execute it 
+        # git lfs install
         # git lfs track "*.lfs.xip"
         #  cat .\.gitattributes
         # *.lfs.zip filter=lfs diff=lfs merge=lfs -text
