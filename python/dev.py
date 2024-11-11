@@ -568,7 +568,12 @@ def zip_dumps():
     try:
         # The output file is large, too large for GitHub,
         # so we write it here to a zip file.
-        zip_file = "../data/pg_dumps/pg_dump_libraries.zip"
+        # See https://git-lfs.com/
+        # git lfs track "*.lfs.xip"
+        #  cat .\.gitattributes
+        # *.lfs.zip filter=lfs diff=lfs merge=lfs -text
+
+        zip_file = "../data/pg_dumps/pg_dump_libraries.lfs.zip"
         with zipfile.ZipFile(zip_file, "w", zipfile.ZIP_DEFLATED) as z:
             z.write('tmp/dump/pg_dump_libraries_schema.sql')
             z.write('tmp/dump/pg_dump_libraries_data.sql')
