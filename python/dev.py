@@ -623,7 +623,7 @@ def truncate_scrub_str(s, max_len):
     if s is None:
         return ""
     else:
-        s2 = s.replace("\r", " ").s.replace("\n", " ").replace('\n', " ").replace("\t", " ")[0:max_len]
+        s2 = s.replace("\r", " ").replace("\n", " ").replace('\n', " ").replace("\t", " ")[0:max_len]
         #print("truncate_scrub_str: {} -> {}".format(len(s), len(s2)))
         return s2
 
