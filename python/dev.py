@@ -585,24 +585,46 @@ def create_airports_tsv():
         # how the how the following json.dumps() call produces double quotes.
         # The JSONB file in the TSV file thus looks like this:
         # "{""airport_id"": ""1"", ""name"": ""Goroka Airport"", ...
-        template = "{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t\"{}\""
-        line = template.format(
-            idx + 1,
-            a["name"],
-            a["city"],
-            a["country"],
-            a["iata"],
-            a["icao"],
-            a["tz"],
-            a["tz_offset"],
-            float(a["latitude"]),
-            float(a["longitude"]),
-            int(a["altitude"]),
-            json.dumps(a).replace('\"', '\"\"')
-        )
-        tsv_lines.append(convert_to_utf8(line))
-        print(json.dumps(a))
+        if is_valid_us_airport(a):
+            template = "{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t\"{}\""
+            line = template.format(
+                idx + 1,
+                a["name"],
+                a["city"],
+                a["country"],
+                a["iata"],
+                a["icao"],
+                a["tz"],
+                a["tz_offset"],
+                float(a["latitude"]),
+                float(a["longitude"]),
+                int(a["altitude"]),
+                json.dumps(a).replace('\"', '\"\"')
+            )
+            tsv_lines.append(convert_to_utf8(line))
+            print(json.dumps(a))
     FS.write_lines(tsv_lines, outfile)
+    print("{} lines".format(len(tsv_lines)))
+
+def is_valid_us_airport(a):
+    try:
+        if a["country"].strip().lower() != "united states":
+            return False  
+        if len(a["name"].strip()) < 10:
+            return False
+        if len(a["city"].strip()) < 3:
+            return False
+        if len(a["tz"].strip()) < 3:
+            return False
+        if len(a["iata"].strip()) < 3:
+            return False
+        if a["iata"].strip().upper() == "TZR":
+            return False  # possibly bad data; ohio or hungary?
+        return True
+    except:
+        pass
+    return False
+
 
 def convert_to_utf8(s):
     return s.encode("utf-8").decode("utf-8")
