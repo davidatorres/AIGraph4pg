@@ -12,6 +12,7 @@ Usage:
     python dev.py gen_all
     python dev.py create_libraries_cypher_load_statements 999999
     python dev.py encrypt_your_env_values tmp/envvars.txt
+    python dev.py create_airports_tsv
     python dev.py zip_dumps
 Options:
   -h --help     Show this screen.
@@ -564,6 +565,29 @@ def create_libraries_cypher_load_statements(count):
 def get_template(template_name):
     return Template.get_template(os.getcwd(), template_name)
 
+def create_airports_tsv():
+    infile = "../data/openflights/airports.json"
+    airports = FS.read_json(infile)
+    for a in airports:
+        print(a)
+
+#   {
+#     "airport_id": "3876",
+#     "name": "Charlotte Douglas International Airport",
+#     "city": "Charlotte",
+#     "country": "United States",
+#     "iata": "CLT",
+#     "icao": "KCLT",
+#     "latitude": "35.2140007019043",
+#     "longitude": "-80.94309997558594",
+#     "altitude": "748",
+#     "tz_offset": "-5",
+#     "dst": "A",
+#     "tz": "America/New_York",
+#     "type": "airport",
+#     "source": "OurAirports"
+#   },
+
 def zip_dumps():
     try:
         # The output file is large, too large for GitHub,
@@ -630,6 +654,8 @@ if __name__ == "__main__":
             elif func == "create_libraries_cypher_load_statements":
                 count = int(sys.argv[2])
                 create_libraries_cypher_load_statements(count)
+            elif func == "create_airports_tsv":
+                create_airports_tsv()   
             elif func == "zip_dumps":
                 zip_dumps()
             elif func == "ad_hoc":

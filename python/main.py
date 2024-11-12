@@ -3,6 +3,8 @@ Usage:
     python main.py log_defined_env_vars
     python main.py list_pg_extensions_and_settings
     python main.py delete_define_libraries_table
+    python main.py delete_define_libraries2_table
+    python main.py delete_define_airports_table
     python main.py load_libraries_table
     python main.py create_libraries_table_vector_index sql/libraries_ivfflat_index.sql
     python main.py vector_search_similar_libraries flask 10
@@ -133,11 +135,12 @@ async def list_pg_extensions_and_settings(pool: psycopg_pool.AsyncConnectionPool
             logging.info(row)
 
 
-async def delete_define_libraries_table(pool: psycopg_pool.AsyncConnectionPool):
-    """
-    Drop and create the libraries table in the specified database.
-    """
-    ddl = FS.read("sql/libraries_ddl.sql")
+async def delete_define_table(
+        pool: psycopg_pool.AsyncConnectionPool,
+        ddl_filename: str,
+        tablename: str):
+
+    ddl = FS.read(ddl_filename)
     logging.info(ddl)
 
     async with pool.connection() as conn:
@@ -149,7 +152,8 @@ async def delete_define_libraries_table(pool: psycopg_pool.AsyncConnectionPool):
         "select * FROM information_schema.tables WHERE table_schema='public';"
     )
     validation_queries.append(
-        "SELECT column_name, data_type, character_maximum_length FROM information_schema.columns WHERE table_name = 'libraries';"
+        "SELECT column_name, data_type, character_maximum_length FROM information_schema.columns WHERE table_name = '{}';".format(
+            tablename)
     )
     for validation_query in validation_queries:
         logging.info("==========")
@@ -157,7 +161,6 @@ async def delete_define_libraries_table(pool: psycopg_pool.AsyncConnectionPool):
         rows = await execute_query(pool, validation_query)
         for row in rows:
             logging.info(row)
-
 
 async def load_libraries_table(pool: psycopg_pool.AsyncConnectionPool):
     data_dir = "../data/pypi/wrangled_libs"
@@ -450,8 +453,17 @@ async def async_main():
                 log_defined_env_vars()
             elif func == "list_pg_extensions_and_settings":
                 await list_pg_extensions_and_settings(pool)
+
             elif func == "delete_define_libraries_table":
-                await delete_define_libraries_table(pool)
+                await delete_define_table(
+                    pool, "sql/libraries_ddl.sql", "libraries")
+            elif func == "delete_define_libraries2_table":
+                await delete_define_table(
+                    pool, "sql/libraries2_ddl.sql", "libraries2")
+            elif func == "delete_define_airports_table":
+                await delete_define_table(
+                    pool, "sql/airports_ddl.sql", "airports")
+                
             elif func == "load_libraries_table":
                 await load_libraries_table(pool)
             elif func == "create_libraries_table_vector_index":
