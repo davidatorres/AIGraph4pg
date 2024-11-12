@@ -567,26 +567,27 @@ def get_template(template_name):
 
 def create_airports_tsv():
     infile = "../data/openflights/airports.json"
+    outfile = "../data/openflights/airports.tsv"
     airports = FS.read_json(infile)
+    tsv_lines = list()
     for a in airports:
-        print(a)
+        template = "{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}"
+        tsv_lines.append(template.format(
+            a["airport_id"],
+            a["name"],
+            a["city"],
+            a["country"],
+            a["iata"],
+            a["icao"],
+            a["tz"],
+            a["tz_offset"],
+            float(a["latitude"]),
+            float(a["longitude"]),
+            float(a["altitude"]),
+            json.dumps(a)
+        ))
+    FS.write_lines(tsv_lines, outfile)
 
-#   {
-#     "airport_id": "3876",
-#     "name": "Charlotte Douglas International Airport",
-#     "city": "Charlotte",
-#     "country": "United States",
-#     "iata": "CLT",
-#     "icao": "KCLT",
-#     "latitude": "35.2140007019043",
-#     "longitude": "-80.94309997558594",
-#     "altitude": "748",
-#     "tz_offset": "-5",
-#     "dst": "A",
-#     "tz": "America/New_York",
-#     "type": "airport",
-#     "source": "OurAirports"
-#   },
 
 def zip_dumps():
     try:
