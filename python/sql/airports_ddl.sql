@@ -2,7 +2,6 @@ DROP TABLE IF EXISTS airports CASCADE;
 
 CREATE TABLE airports (
     id                 bigserial primary key,
-    airport_id         INTEGER,
     name               VARCHAR(255),
     city               VARCHAR(60),
     country            VARCHAR(60),

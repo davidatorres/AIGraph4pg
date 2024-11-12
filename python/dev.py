@@ -566,14 +566,28 @@ def get_template(template_name):
     return Template.get_template(os.getcwd(), template_name)
 
 def create_airports_tsv():
+    """
+    This method creates a TSV file that can be loaded into the
+    Azure PostgreSQL airports table, from a psql terminal on your
+    Win 11 laptop, with the following command:
+
+    \COPY airports FROM '/Users/chjoakim/github/AIGraph4pg/data/openflights/airports.tsv' WITH (FORMAT CSV, DELIMITER E'\t');
+    
+    Change '/Users/chjoakim/github/' to your actual path for the
+    AIGraph4pg project on your computer.
+    """
     infile = "../data/openflights/airports.json"
     outfile = "../data/openflights/airports.tsv"
-    airports = FS.read_json(infile)
+    airports = FS.read_json(infile) #, encoding="cp1252")
     tsv_lines = list()
-    for a in airports:
-        template = "{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}"
-        tsv_lines.append(template.format(
-            a["airport_id"],
+    for idx, a in enumerate(airports):
+        # Note the quoting of the last field, the JSONB column, and
+        # how the how the following json.dumps() call produces double quotes.
+        # The JSONB file in the TSV file thus looks like this:
+        # "{""airport_id"": ""1"", ""name"": ""Goroka Airport"", ...
+        template = "{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t\"{}\""
+        line = template.format(
+            idx + 1,
             a["name"],
             a["city"],
             a["country"],
@@ -583,11 +597,15 @@ def create_airports_tsv():
             a["tz_offset"],
             float(a["latitude"]),
             float(a["longitude"]),
-            float(a["altitude"]),
-            json.dumps(a)
-        ))
+            int(a["altitude"]),
+            json.dumps(a).replace('\"', '\"\"')
+        )
+        tsv_lines.append(convert_to_utf8(line))
+        print(json.dumps(a))
     FS.write_lines(tsv_lines, outfile)
 
+def convert_to_utf8(s):
+    return s.encode("utf-8").decode("utf-8")
 
 def zip_dumps():
     try:
