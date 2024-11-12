@@ -3,7 +3,7 @@ DROP TABLE IF EXISTS libraries2 CASCADE;
 CREATE TABLE libraries2 (
     id                   bigserial primary key,
     name                 VARCHAR(30),
-    description          VARCHAR(2048),
+    description          VARCHAR(1024),
     keywords             VARCHAR(255),
     license              VARCHAR(255),
     release_count        INTEGER,

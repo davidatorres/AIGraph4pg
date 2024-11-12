@@ -107,14 +107,16 @@ Directory/File             Description
     - Web UI for vector search SQL queries
     - Logo image creation
   - TODO:
+    - Reduce/simplify the libraries dataset
+    - Improve perf of DB loading with psql \copy
     - Example JSONB queries
+    - GitHub LFS zipped data files
     - Richer openCypher queries for graph traversal
     - Web UI for graph queries with openCypher, and D3.js visualization
     - Docker image on DockerHub
     - Architecture Diagram, add to the About page
-    - Revine the user docs
+    - Refine the initial/alpha set of user docs
 
-- TBD: Optimize DB load process
 - TBD: Generative AI for openCypher queries
 - TBD: Utilize the azure_ai extension
 - TBD: Utilize the semantic ranker

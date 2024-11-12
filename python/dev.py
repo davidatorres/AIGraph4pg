@@ -471,7 +471,7 @@ def create_libraries_cypher_load_statements(count):
             values["libtype"] = str(doc["libtype"]).replace("'", "").strip()
             values["license"] = str(doc["license"]).replace("'", "").strip()[0:40]
             values["keywords"] = str(doc["keywords"]).replace("'", "").strip()
-            values["release_count"] = int(doc["release_count"])
+            values["release_count"] = release_count(doc)
             print(values)
             cypher = Template.render(library_vertex_template, values)
             cypher_statements.append(cypher.replace("\n", " ").strip())
@@ -554,15 +554,6 @@ def create_libraries_cypher_load_statements(count):
     logging.info("  exception_count:   {}".format(exception_count))
     logging.info("  cypher_statements: {}".format(len(cypher_statements)))
 
-    # 2024-11-05 16:06:11,613 - file written: libraries.txt
-    # 2024-11-05 16:06:11,790 - Totals:
-    # 2024-11-05 16:06:11,791 -   library_count:     10855
-    # 2024-11-05 16:06:11,791 -   developer_count:   10466
-    # 2024-11-05 16:06:11,791 -   edge_count:        157024
-    # 2024-11-05 16:06:11,792 -   exception_count:   0
-    # 2024-11-05 16:06:11,792 -   cypher_statements: 178345
-
-
 def get_template(template_name):
     return Template.get_template(os.getcwd(), template_name)
 
@@ -585,7 +576,7 @@ def create_libraries_tsv():
     tsv_lines, seq = list(), 0
     for file_idx, filename in enumerate(filtered_files_list):
         try:
-            if file_idx < 100:
+            if file_idx < 50000:
                 fq_filename = "{}/{}".format(data_dir, filename)
                 logging.info("processing file {} {}".format(file_idx, fq_filename))
                 doc = FS.read_json(fq_filename)
@@ -593,11 +584,11 @@ def create_libraries_tsv():
                     seq = seq + 1
                     # prune the potentially long str values for this sample data
                     doc['name'] = truncate_scrub_str(doc["name"], 30)
-                    doc['description'] = truncate_scrub_str(doc["keywords"], 1024)
-                    doc['keywords'] = truncate_scrub_str(doc["keywords"], 255)
-                    doc['license'] = truncate_scrub_str(doc["license"], 255)
-                    doc['package_url'] = truncate_scrub_str(doc["package_url"], 100)
-                    doc['project_url'] = truncate_scrub_str(doc["project_url"], 100)
+                    doc['description'] = truncate_scrub_str(doc["keywords"], 1000)
+                    doc['keywords'] = truncate_scrub_str(doc["keywords"], 250)
+                    doc['license'] = truncate_scrub_str(doc["license"], 250)
+                    doc['package_url'] = truncate_scrub_str(doc["package_url"], 99)
+                    doc['project_url'] = truncate_scrub_str(doc["project_url"], 99)
 
                     metadata = dict()  # this is the jsonb value, a subset of the doc
                     for attr in 'name,description,keywords,license,release_count,package_url,project_url'.split(","):
@@ -628,16 +619,11 @@ def create_libraries_tsv():
         z.write(tsv_filename)
 
 
-    # zip_file = "../data/pg_dumps/pg_dump_libraries.lfs.zip"
-    # with zipfile.ZipFile(zip_file, "w", zipfile.ZIP_DEFLATED) as z:
-    #     z.write('tmp/dump/pg_dump_libraries_schema.sql')
-    #     z.write('tmp/dump/pg_dump_libraries_data.sql')
-
 def truncate_scrub_str(s, max_len):
     if s is None:
         return ""
     else:
-        s2 = s.replace("\n", " ").replace('\n', " ").replace("\t", " ")[0:max_len]
+        s2 = s.replace("\r", " ").s.replace("\n", " ").replace('\n', " ").replace("\t", " ")[0:max_len]
         #print("truncate_scrub_str: {} -> {}".format(len(s), len(s2)))
         return s2
 
@@ -683,7 +669,16 @@ def create_airports_tsv():
     print("{} lines".format(len(tsv_lines)))
 
 def is_valid_library(a):
+    omit_libs = "geohash,myst-docutils,natto-py,cobs".split(",")
+    if a['name'].strip().lower() in omit_libs:
+        return False  # has problematic data
     return True
+
+def release_count(doc):
+    try:
+        return int(doc["release_count"].strip())
+    except:
+        return 0
 
 def is_valid_us_airport(a):
     try:
