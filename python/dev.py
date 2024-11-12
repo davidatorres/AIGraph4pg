@@ -12,6 +12,7 @@ Usage:
     python dev.py gen_all
     python dev.py create_libraries_cypher_load_statements 999999
     python dev.py encrypt_your_env_values tmp/envvars.txt
+    python dev.py create_libraries_tsv
     python dev.py create_airports_tsv
     python dev.py zip_dumps
 Options:
@@ -565,6 +566,82 @@ def create_libraries_cypher_load_statements(count):
 def get_template(template_name):
     return Template.get_template(os.getcwd(), template_name)
 
+def create_libraries_tsv():
+    """
+    This method creates a TSV file that can be loaded into the
+    Azure PostgreSQL libraries table, from a psql terminal on your
+    Win 11 laptop, with the following command:
+
+    \COPY libraries2 FROM '/Users/chjoakim/github/AIGraph4pg/data/data/pypi/libraries.tsv' WITH (FORMAT CSV, DELIMITER E'\t');
+
+    """
+    data_dir = "../data/pypi/wrangled_libs"
+    tsv_filename = "../data/pypi/libraries.tsv"
+    zip_filename = "../data/pypi/libraries.tsv.lfs.zip"
+
+    logging.info("load_libraries_table, data_dir: {}".format(data_dir))
+    files_list = FS.list_files_in_dir(data_dir)
+    filtered_files_list = filter_files_list(files_list, ".json")
+    tsv_lines, seq = list(), 0
+    for file_idx, filename in enumerate(filtered_files_list):
+        try:
+            if file_idx < 100:
+                fq_filename = "{}/{}".format(data_dir, filename)
+                logging.info("processing file {} {}".format(file_idx, fq_filename))
+                doc = FS.read_json(fq_filename)
+                if is_valid_library(doc):
+                    seq = seq + 1
+                    # prune the potentially long str values for this sample data
+                    doc['name'] = truncate_scrub_str(doc["name"], 30)
+                    doc['description'] = truncate_scrub_str(doc["keywords"], 1024)
+                    doc['keywords'] = truncate_scrub_str(doc["keywords"], 255)
+                    doc['license'] = truncate_scrub_str(doc["license"], 255)
+                    doc['package_url'] = truncate_scrub_str(doc["package_url"], 100)
+                    doc['project_url'] = truncate_scrub_str(doc["project_url"], 100)
+
+                    metadata = dict()  # this is the jsonb value, a subset of the doc
+                    for attr in 'name,description,keywords,license,release_count,package_url,project_url'.split(","):
+                        metadata[attr] = doc[attr]
+
+                    template = "{}\t{}\t{}\t{}\t{}\t{}\t{}\t{},\t{}\t\"{}\""
+                    line = template.format(
+                        seq,
+                        doc["name"],
+                        doc['description'],
+                        doc["keywords"],
+                        doc["license"],
+                        int(doc["release_count"]),
+                        doc["package_url"],
+                        doc["project_url"],
+                        doc["embedding"],
+                        json.dumps(metadata).replace('\"', '\"\"')
+                    )
+                    tsv_lines.append(convert_to_utf8(line))
+        except Exception as e:
+            logging.error("Error processing file: {}".format(fq_filename))
+            logging.info(str(e))
+
+    FS.write_lines(tsv_lines, tsv_filename)
+    print("{} lines".format(len(tsv_lines)))
+
+    with zipfile.ZipFile(zip_filename, "w", zipfile.ZIP_DEFLATED) as z:
+        z.write(tsv_filename)
+
+
+    # zip_file = "../data/pg_dumps/pg_dump_libraries.lfs.zip"
+    # with zipfile.ZipFile(zip_file, "w", zipfile.ZIP_DEFLATED) as z:
+    #     z.write('tmp/dump/pg_dump_libraries_schema.sql')
+    #     z.write('tmp/dump/pg_dump_libraries_data.sql')
+
+def truncate_scrub_str(s, max_len):
+    if s is None:
+        return ""
+    else:
+        s2 = s.replace("\n", " ").replace('\n', " ").replace("\t", " ")[0:max_len]
+        #print("truncate_scrub_str: {} -> {}".format(len(s), len(s2)))
+        return s2
+
+
 def create_airports_tsv():
     """
     This method creates a TSV file that can be loaded into the
@@ -572,7 +649,7 @@ def create_airports_tsv():
     Win 11 laptop, with the following command:
 
     \COPY airports FROM '/Users/chjoakim/github/AIGraph4pg/data/openflights/airports.tsv' WITH (FORMAT CSV, DELIMITER E'\t');
-    
+
     Change '/Users/chjoakim/github/' to your actual path for the
     AIGraph4pg project on your computer.
     """
@@ -602,9 +679,11 @@ def create_airports_tsv():
                 json.dumps(a).replace('\"', '\"\"')
             )
             tsv_lines.append(convert_to_utf8(line))
-            print(json.dumps(a))
     FS.write_lines(tsv_lines, outfile)
     print("{} lines".format(len(tsv_lines)))
+
+def is_valid_library(a):
+    return True
 
 def is_valid_us_airport(a):
     try:
@@ -695,8 +774,12 @@ if __name__ == "__main__":
             elif func == "create_libraries_cypher_load_statements":
                 count = int(sys.argv[2])
                 create_libraries_cypher_load_statements(count)
+
             elif func == "create_airports_tsv":
-                create_airports_tsv()   
+                create_airports_tsv()  
+            elif func == "create_libraries_tsv":
+                create_libraries_tsv()   
+
             elif func == "zip_dumps":
                 zip_dumps()
             elif func == "ad_hoc":
