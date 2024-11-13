@@ -182,6 +182,8 @@ command          description
 \pset pager 1    Turn output pagination on
 \x on            Turn on mysql-like \G output
 \x off           Turn off mysql-like \G output
+\echo :AUTOCOMMIT
+SET AUTOCOMMIT { = | TO } { ON | OFF }
 ```
 
 
