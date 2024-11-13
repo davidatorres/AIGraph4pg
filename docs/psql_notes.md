@@ -142,6 +142,7 @@ SET search_path = ag_catalog, "$user", public;
 show search_path;
 
 dev=> SELECT ag_catalog.create_graph('graph1');
+dev=> SELECT ag_catalog.create_graph('libraries2');
 
 dev=> SELECT * FROM ag_catalog.drop_graph('graph_name', true);   # true/false to cascade
 
@@ -181,4 +182,10 @@ command          description
 \pset pager 1    Turn output pagination on
 \x on            Turn on mysql-like \G output
 \x off           Turn off mysql-like \G output
+```
+
+
+```
+    \COPY libraries2 FROM '/Users/chjoakim/github/AIGraph4pg/data/data/pypi/libraries.tsv' WITH (FORMAT CSV, DELIMITER E'\t');
+
 ```

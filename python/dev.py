@@ -10,7 +10,8 @@ Usage:
     python dev.py gen_environment_variables_md
     python dev.py gen_pg_dump_script
     python dev.py gen_all
-    python dev.py create_libraries_cypher_load_statements 999999
+    python dev.py create_libraries_cypher_load_statements <graphname> <count>
+    python dev.py create_libraries_cypher_load_statements libraries2 999999
     python dev.py encrypt_your_env_values tmp/envvars.txt
     python dev.py create_libraries_tsv
     python dev.py create_airports_tsv
@@ -43,7 +44,7 @@ from src.util.sample_queries import SampleQueries
 logging.basicConfig(
     format="%(asctime)s - %(message)s", level=LoggingLevelService.get_level()
 )
-
+OMIT_LIBS = "geohash,myst-docutils,natto-py,cobs".split(",")  # problematic data
 
 def print_options(msg):
     print("{} {}".format(os.path.basename(__file__), msg))
@@ -421,7 +422,7 @@ def filter_files_list(files_list, suffix):
     return filtered
 
 
-def create_libraries_cypher_load_statements(count):
+def create_libraries_cypher_load_statements(graphname, count):
     """ """
     data_dir = "../data/pypi/wrangled_libs"
     logging.info("load_libraries_table, data_dir: {}".format(data_dir))
@@ -430,14 +431,17 @@ def create_libraries_cypher_load_statements(count):
     library_docs_list, developers = list(), dict()
     cypher_statements, edge_statements = list(), list()
     library_count, developer_count, exception_count = 0, 0, 0
-    graphname = "libraries1"
+
+    cypher_statements.append('SET search_path = ag_catalog, "$user", public;')
 
     # Load the libraries documents into a list for subsequent iteration
     for file_idx, lib_filename in enumerate(filtered_files_list):
         if file_idx < count:
             fq_filename = "{}/{}".format(data_dir, lib_filename)
             logging.info("data_file {}: {}".format(file_idx, fq_filename))
-            library_docs_list.append(FS.read_json(fq_filename))
+            doc = FS.read_json(fq_filename)
+            if is_valid_library(doc):
+                library_docs_list.append(doc)
     logging.info("library docs list count: {}".format(len(library_docs_list)))
 
     library_vertex_template = get_template("create_cypher_library_vertex.txt")
@@ -537,8 +541,8 @@ def create_libraries_cypher_load_statements(count):
         # The output file is large, too large for GitHub, so we write it
         # to a git-ignored tmporary file, then zip it to ../data/cypher/libraries.zip
         # for storage in GitHub.  It can be unzipped with 'jar xvf libraries.zip'.
-        txt_file = "libraries.txt"
-        zip_file = "../data/cypher/libraries.zip"
+        txt_file = "{}.sql".format(graphname)
+        zip_file = "../data/cypher/{}.zip".format(graphname)
         FS.write_lines(cypher_statements, txt_file)
         with zipfile.ZipFile(zip_file, "w", zipfile.ZIP_DEFLATED) as z:
             z.write(txt_file)
@@ -562,9 +566,6 @@ def create_libraries_tsv():
     This method creates a TSV file that can be loaded into the
     Azure PostgreSQL libraries table, from a psql terminal on your
     Win 11 laptop, with the following command:
-
-    \COPY libraries2 FROM '/Users/chjoakim/github/AIGraph4pg/data/data/pypi/libraries.tsv' WITH (FORMAT CSV, DELIMITER E'\t');
-
     """
     data_dir = "../data/pypi/wrangled_libs"
     tsv_filename = "../data/pypi/libraries.tsv"
@@ -669,9 +670,8 @@ def create_airports_tsv():
     print("{} lines".format(len(tsv_lines)))
 
 def is_valid_library(a):
-    omit_libs = "geohash,myst-docutils,natto-py,cobs".split(",")
-    if a['name'].strip().lower() in omit_libs:
-        return False  # has problematic data
+    if a['name'].strip().lower() in OMIT_LIBS:
+        return False
     return True
 
 def release_count(doc):
@@ -766,9 +766,11 @@ if __name__ == "__main__":
             elif func == "encrypt_your_env_values":
                 infile = sys.argv[2]
                 encrypt_your_env_values(infile)
+
             elif func == "create_libraries_cypher_load_statements":
-                count = int(sys.argv[2])
-                create_libraries_cypher_load_statements(count)
+                graphname = sys.argv[2]
+                count = int(sys.argv[3])
+                create_libraries_cypher_load_statements(graphname, count)
 
             elif func == "create_airports_tsv":
                 create_airports_tsv()  

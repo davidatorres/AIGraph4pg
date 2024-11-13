@@ -11,6 +11,9 @@
 # Execute the following command in a bash terminal to see script usage:
 # (venv) PS ...\python> ./psql.sh help
 #
+# .\psql.ps1 flex dev
+# .\psql.ps1 flex dev libraries2.sql
+#
 # Chris Joakim, Microsoft
 
 ENVNAME="$1"

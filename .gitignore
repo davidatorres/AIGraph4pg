@@ -18,11 +18,15 @@
 **/pyvenv.cfg
 
 az/provision-config.json
+data/cypher/*.sql
 data/cypher/*.txt
+data/cypher/*.zip
 data/pg_dumps/*.*
 data/pypi/libraries.tsv
 data/pypi/libraries.tsv.lfs.zip
 python/libraries.txt
+python/libraries1.sql
+python/libraries2.sql
 python/private.txt
 python/us_openflights.txt
 
