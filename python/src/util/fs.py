@@ -145,9 +145,13 @@ class FS:
     def write_lines(cls, lines: list[str], outfile: str, verbose=True) -> None:
         """Write the given str lines to the given file."""
         if lines is not None:
+            last_idx = len(lines) - 1
             with open(file=outfile, encoding="utf-8", mode="w") as file:
-                for line in lines:
-                    file.write(line + "\n")  # os.linesep)  # \n works on Windows
+                for line_idx, line in enumerate(lines):
+                    if line_idx == last_idx:
+                        file.write(line)
+                    else:
+                        file.write(line + "\n")
                 if verbose is True:
                     logging.warning(f"file written: {outfile}")
 
