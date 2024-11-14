@@ -205,19 +205,36 @@ def write_query_results_to_file(view_data, result_objects):
 
     try:
         # write the results to a tmp file for visual inspection
-        fs_data, json_objects = dict(), list()
+        fs_data, json_rows = dict(), list()
         fs_data["query_text"] = view_data["query_text"]
         fs_data["results_message"] = view_data["results_message"]
         fs_data["elapsed"] = view_data["elapsed"]
+        fs_data["json_objects"] = []
         fs_data["result_objects"] = result_objects
-        for obj in result_objects:
-            json_objects.append(json.loads(obj))
-        fs_data["json_objects"] = json_objects
 
+        for t in result_objects:
+            # t is a tup in various forms per the query
+            json_row = list()
+            json_rows.append(json_row)
+            if type(t) == tuple:
+                for elem in t:
+                    if isinstance(elem, str):
+                        if "::" in elem:
+                            obj = json.loads(elem.split("::")[0])
+                            print("obj: {} {}".format(obj, type(obj)))
+                            json_row.append(obj)
+                        else:
+                            json_row.append(elem)
+                    else:
+                        json_row.append(elem)
+            else:
+                json_row.append(elem)
+        fs_data["json_objects"] = json_rows
     except Exception as e2:
         logging.warning(str(e2))
         logging.warning(traceback.format_exc())
     FS.write_json(fs_data, "tmp/search_{}.json".format(int(time.time())))
+
 
 def query_console_view_data(query_text=""):
     """
