@@ -172,6 +172,7 @@ async def post_query_console(req: Request):
     )
 
 def write_query_results_to_file(view_data, result_objects):
+# TODO - extract this logic to a util class
 
 # 2024-11-14 16:38:39,677 - query_console - stmt: SELECT oid, extname, extversion FROM pg_extension;
 # 2024-11-14 16:38:39,723 - query_console - stmt executed
@@ -202,7 +203,7 @@ def write_query_results_to_file(view_data, result_objects):
 # row: ('{"id": 844424930131969, "label": "Developer", "properties": {"name": "info@2captcha.com"}}::vertex',) 1 <class 'tuple'>
 # row: ('{"id": 844424930131970, "label": "Developer", "properties": {"name": "xoviat"}}::vertex',) 1 <class 'tuple'>
 
-
+# row: ('[{"id": 1407374883553290, "label": "uses_lib", "end_id": 1125899906851581, "start_id": 1125899906842630, "properties": {}}::edge, {"id": 1407374883587559, "label": "uses_lib", "end_id": 1125899906851227, "start_id": 1125899906851581, "properties": {}}::edge, {"id": 1407374883586028, "label": "uses_lib", "end_id": 1125899906853118, "start_id": 1125899906851227, "properties": {}}::edge, {"id": 1407374883592102, "label": "uses_lib", "end_id": 1125899906851227, "start_id": 1125899906853118, "properties": {}}::edge, {"id": 1407374883586023, "label": "uses_lib", "end_id": 1125899906850362, "start_id": 1125899906851227, "properties": {}}::edge]',) 1 <class 'tuple'>
     try:
         # write the results to a tmp file for visual inspection
         fs_data, json_rows = dict(), list()
@@ -220,6 +221,7 @@ def write_query_results_to_file(view_data, result_objects):
                 for elem in t:
                     if isinstance(elem, str):
                         if "::" in elem:
+                            jstr = elem.split("::")[0].strip()
                             obj = json.loads(elem.split("::")[0])
                             print("obj: {} {}".format(obj, type(obj)))
                             json_row.append(obj)
