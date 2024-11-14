@@ -83,16 +83,47 @@ SELECT * FROM ag_catalog.cypher('libraries1',
   as (v agtype);
 --end
 
---name CYPHER: Library vertices in graph
+--name CYPHER: Count all vertices in graph
+--text
+SELECT * FROM ag_catalog.cypher('libraries1',
+  $$ MATCH (n) RETURN count(n) as count $$)
+  as (v agtype);
+--end
+
+
+--name CYPHER: Count all edges in graph
+--text
+SELECT * FROM ag_catalog.cypher('libraries1',
+  $$ MATCH ()-[r]->() RETURN count(r) as count $$)
+  as (e agtype);
+--end
+
+
+--name CYPHER: Count all the 'uses_lib' edges in graph
+--text
+SELECT * FROM ag_catalog.cypher('libraries1',
+  $$ MATCH ()-[r:uses_lib]->() RETURN count(r) as count $$)
+  as (e agtype);
+--end
+
+
+--name CYPHER: Show 10 Library vertices in graph
 --text
 SELECT * FROM ag_catalog.cypher('libraries1',
   $$ MATCH (lib:Library) RETURN lib limit 10 $$)
   as (v agtype);
 --end
 
---name CYPHER: Developer vertices in graph
+--name CYPHER: Show 10 Developer vertices in graph
 --text
 SELECT * FROM ag_catalog.cypher('libraries1',
   $$ MATCH (dev:Developer) RETURN dev limit 10 $$)
+  as (v agtype);
+--end
+
+--name CYPHER: Show 10 'uses_lib' edges in graph
+--text
+SELECT * FROM ag_catalog.cypher('libraries1',
+  $$ MATCH ()-[r:uses_lib]->() RETURN r limit 10 $$)
   as (v agtype);
 --end
