@@ -208,3 +208,10 @@ See https://quickref.me/postgres.html
 cat .\load_libraries1.txt | grep rows | Measure-Object -line
 178270
 ```
+
+
+```
+SELECT * FROM ag_catalog.cypher('libraries1',
+  $$ MATCH (lib:Library)-[r:uses_lib*5]->() RETURN r limit 10 $$)
+  as (v agtype);
+```
