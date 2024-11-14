@@ -108,18 +108,11 @@ async def get_about(req: Request):
 async def get_sample_queries(req: Request):
     return SampleQueries.read_queries()
 
-
 # ---
-
 
 @app.get("/query_console")
 async def get_query_console(req: Request):
-    view_data = dict()
-    queries = SampleQueries.read_queries()
-    view_data["sample_queries"] = queries
-    view_data["query_text"] = ""
-    view_data["results_message"] = ""
-    view_data["results"] = ""
+    view_data = query_console_view_data()
     return views.TemplateResponse(
         request=req, name="query_console.html", context=view_data
     )
@@ -131,31 +124,21 @@ async def post_query_console(req: Request):
     form_data = await req.form()
     logging.info("/query_console form_data: {}".format(form_data))
     query_text = form_data.get("query_text").strip()
-    view_data = dict()
-    queries = SampleQueries.read_queries()
-    view_data["sample_queries"] = queries
-    view_data["query_text"] = query_text
-    view_data["results_message"] = ""
-    view_data["results"] = ""
+    view_data = query_console_view_data(query_text)
 
     if len(query_text) > 10:
         logging.info("query_console - query_text: {}".format(query_text))
         results_list = list()
+        start_time = time.time()
         try:
             conn_str = get_database_connection_string()
             async with await psycopg.AsyncConnection.connect(
                 conn_str, autocommit=True
             ) as conn:
-                logging.info("query_console - connection acquired")
-                logging.info(conn.info.dbname)
-                logging.info(conn.info.status)
                 async with conn.cursor() as cursor:
-                    logging.info("query_console - cursor acquired")
                     await cursor.execute(
                         'SET search_path = "$user", ag_catalog, public;'
                     )
-                    logging.info("query_console - SET search_path executed")
-
                     stmt = query_text.replace("\r\n", "")
                     logging.info("query_console - stmt: {}".format(stmt))
 
@@ -170,10 +153,7 @@ async def post_query_console(req: Request):
 
                     async for row in cursor:
                         results_list.append(str(row))
-                        # logging.info("query_console - row: {} {}".format(row, str(type(row))))
-                    logging.info(
-                        "query_console - {} rows fetched".format(len(results_list))
-                    )
+                    view_data["elapsed"] = "elapsed: {}".format(time.time() - start_time)
                     view_data["results_message"] = "Results:"
                     view_data["results"] = "\n".join(results_list)
                     view_data["query_text"] = query_text
@@ -183,10 +163,25 @@ async def post_query_console(req: Request):
             view_data["results"] = str(e)
             view_data["query_text"] = query_text
 
+    print(view_data)
     return views.TemplateResponse(
         request=req, name="query_console.html", context=view_data
     )
 
+
+def query_console_view_data(query_text=""):
+    """
+    Return an initial dict with the fields necessary for the
+    query_console.html view.
+    """
+    view_data = dict()
+    queries = SampleQueries.read_queries()
+    view_data["sample_queries"] = queries
+    view_data["query_text"] = query_text
+    view_data["results_message"] = ""
+    view_data["results"] = ""
+    view_data["elapsed"] = ""
+    return view_data
 
 # ---
 
