@@ -5,31 +5,49 @@
 # At runtime this file is read by class SampleQueries.
 
 
---name SQL: PostgreSQL Extensions
+--name PG: PostgreSQL Extensions
 --text
 SELECT oid, extname, extversion FROM pg_extension;
 --end
 
 
---name SQL: PostgreSQL Available Extensions
+--name PG: PostgreSQL Available Extensions
 --text
 SELECT name, default_version, installed_version, comment FROM pg_available_extensions
  where installed_version is null;
 --end
 
 
---name SQL: Display the pg_settings
+--name PG: Display the pg_settings
 --text
 select * from pg_settings;
 --end
 
 
---name SQL: Library table columns
+--name PG: Library table columns
 --text
 SELECT ordinal_position, table_catalog, table_name, column_name, data_type, character_maximum_length
   FROM information_schema.columns
   WHERE table_name = 'libraries'
   ORDER BY ordinal_position;
+--end
+
+
+--name PG: List the AGE graphs
+--text
+SELECT * FROM ag_catalog.ag_graph;
+--end
+
+
+--name PG: List the AGE graph labels
+--text
+SELECT * FROM ag_catalog.ag_label;
+--end
+
+
+--name PG: List the ag pg_types
+--text
+SELECT typelem FROM pg_type; 
 --end
 
 
@@ -44,28 +62,10 @@ select id, name, libtype from libraries offset 0 limit 10;
 --end
 
 
---name CYPHER: List the ag pg_types
---text
-SELECT typelem FROM pg_type; 
---end
 
 
---name CYPHER: List the AGE graphs
---text
-SELECT * FROM ag_catalog.ag_graph;
---end
 
 
---name CYPHER: List the AGE graph labels
---text
-SELECT * FROM ag_catalog.ag_label;
---end
-
-
---name CYPHER: List the AGE graphs
---text
-SELECT * FROM ag_catalog.ag_graph;
---end
 
 
 --name CYPHER: Count Library vertices in graph

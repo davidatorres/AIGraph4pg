@@ -6,17 +6,52 @@
   <h5>Query Console</h5>
   <br>
   <form method="post" id="form" name="form">
-    <div class="dropdown">
-      <button class="btn btn-outline-primary mb-3 dropdown-toggle" type="button"
-        id="sample_query_btn" data-bs-toggle="dropdown" aria-expanded="false">
-        Sample Queries
-      </button>
-      <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-        {% for query in sample_queries %}
-        <li><a class="dropdown-item" href="#">{{ query['name'] }}</a></li>
-        {% endfor %}
-      </ul>
+    <div class="row align-items-center">
+
+      <div class="col-2 dropdown">
+        <button class="btn btn-outline-primary mb-3 dropdown-toggle" type="button"
+          id="sample_query_btn" data-bs-toggle="dropdown" aria-expanded="false">
+          PG Queries
+        </button>
+        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+          {% for query in sample_queries %}
+            {% if query['name'].startswith('PG') %}
+            <li><a class="dropdown-item" href="#">{{ query['name'] }}</a></li>
+            {% endif %}
+          {% endfor %}
+        </ul>
+      </div>
+
+      <div class="col-2 dropdown">
+        <button class="btn btn-outline-primary mb-3 dropdown-toggle" type="button"
+          id="sample_query_btn" data-bs-toggle="dropdown" aria-expanded="false">
+          SQL Queries
+        </button>
+        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+          {% for query in sample_queries %}
+            {% if query['name'].startswith('SQL') %}
+            <li><a class="dropdown-item" href="#">{{ query['name'] }}</a></li>
+            {% endif %}
+          {% endfor %}
+        </ul>
+      </div>
+
+      <div class="col-2 dropdown">
+        <button class="btn btn-outline-primary mb-3 dropdown-toggle" type="button"
+          id="sample_query_btn" data-bs-toggle="dropdown" aria-expanded="false">
+          Graph Queries
+        </button>
+        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+          {% for query in sample_queries %}
+            {% if query['name'].startswith('CYPHER') %}
+            <li><a class="dropdown-item" href="#">{{ query['name'] }}</a></li>
+            {% endif %}
+          {% endfor %}
+        </ul>
+      </div>
+
     </div>
+
     <div class="mb-3">
       <label for="query_text" class="form-label"></label>
       <textarea rows='4' class="form-control fs-6" id="query_text" name="query_text" value="{{ query_text }}">{{ query_text }}</textarea>
