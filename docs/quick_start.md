@@ -107,7 +107,6 @@ The project directory structure looks like this:
 ├── az
 ├── data
 │   ├── cypher               <-- curated list of statements to populate the Apache AGE graph
-│   ├── openflights          <-- smaller graph dataset of US airports, airlines, routes
 │   └── pypi
 │       └── wrangled_libs    <-- the curated libraries dataset, pre-vectorized
 ├── docs

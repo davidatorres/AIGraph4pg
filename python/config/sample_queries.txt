@@ -18,6 +18,12 @@ SELECT name, default_version, installed_version, comment FROM pg_available_exten
 --end
 
 
+--name SQL: Display the pg_settings
+--text
+select * from pg_settings;
+--end
+
+
 --name SQL: Library table columns
 --text
 SELECT ordinal_position, table_catalog, table_name, column_name, data_type, character_maximum_length

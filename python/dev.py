@@ -1,8 +1,10 @@
 """
 This program is used for the development of the AIGraph4PG project
-and not for users of the project.
+and not for users of the project.  It is used to generate various
+files and code artifacts.
 Usage:
     python dev.py log_defined_env_vars
+    ---
     python dev.py gen_dotenv_examples
     python dev.py gen_ps1_env_var_script
     python dev.py gen_docker_compose_fragment
@@ -10,11 +12,10 @@ Usage:
     python dev.py gen_environment_variables_md
     python dev.py gen_pg_dump_script
     python dev.py gen_all
-    python dev.py create_libraries_cypher_load_statements <graphname> <count>
-    python dev.py create_libraries_cypher_load_statements libraries2 999999
-    python dev.py encrypt_your_env_values tmp/envvars.txt
+    ---
     python dev.py create_libraries_tsv
-    python dev.py create_airports_tsv
+    python dev.py create_libraries_cypher_load_statements <graphname> <count>
+    python dev.py create_libraries_cypher_load_statements libraries1 999999
     python dev.py zip_dumps
 Options:
   -h --help     Show this screen.
@@ -74,6 +75,7 @@ def gen_dotenv_examples():
                 pass
             sample_lines.append('{}="{}"'.format(name, sample_value))
             actuals_lines.append('{}="{}"'.format(name, actual_value))
+    
     FS.write_lines(sample_lines, "dotenv_example")
     FS.write_lines(actuals_lines, "tmp/dotenv_example")
     logging.info("Note: file dotenv_example contains sample values")
@@ -291,129 +293,6 @@ def gen_all():
     gen_environment_variables_md()
 
 
-def encryption_example():
-    logging.info("encryption_example")
-    test_cases = [
-        "",
-        "hello earth",
-        "867-5309",
-        "8888fbdbb32943ad9874ceXX729f53bh",
-        "jwonQQTexjIQvYTfX4Rx6LoVT5mCf8yYDorkAz8LrK4FsGzOa8L9At33Kzflj26xCS4JCiYr9swgXYDbV8pnqQ==",
-        "https://en.wikipedia.org/wiki/Easter_Island",
-    ]
-
-    # Example of how to generate your own key
-    fernet_key = ConfigService.generate_fernet_key()
-    print("fernet_key: {}".format(fernet_key))
-
-    key = ConfigService.symmetric_encryption_key()
-    print("key: {}".format(key))
-
-    for idx, value in enumerate(test_cases):
-        encrypted = ConfigService.sym_encrypt(value)
-        decrypted = ConfigService.sym_decrypt(encrypted)
-        print("test_case {}:".format(idx))
-        print("  value:     <{}>".format(value))
-        print("  encrypted: <{}>".format(encrypted))
-        print("  decrypted: <{}>".format(decrypted))
-        if value == decrypted:
-            print("  SUCCESS")
-        else:
-            print("  FAILURE")
-
-
-def encrypt_your_env_values(infile):
-    """
-    Produce Windows PowerShell script tmp/encrypted_envvars.ps1
-    to set the encrypted environment variables per your input text file.
-    The input file contains lines with environment variable names, a colon,
-    and their corresponding unencrypted values.
-
-    You may want to encrypt the following environment values:
-    AIG4PG_OPENAI_KEY
-    AIG4PG_OPENAI_URL
-    AIG4PG_PG_FLEX_SERVER
-    AIG4PG_PG_FLEX_USER
-    AIG4PG_PG_FLEX_PASS
-
-    Please see the input text file validation logic below.
-    """
-    lines = FS.read_lines(infile)
-    file_has_errors = False
-    ps1_line_template = '[Environment]::SetEnvironmentVariable("{}", "{}", "User")'
-    output_lines = list()
-    today = datetime.today().strftime("%Y-%m-%d")
-    output_lines.append(
-        "# This script was generated on {} with the following command:".format(today)
-    )
-    output_lines.append("# python dev.py encrypt_your_env_values {}".format(infile))
-
-    # First, validate the file:
-    # Each line must contain three tokens - an environment variable name, a colon, and a value.
-    # The colon must be surrounded by spaces.
-    # The environment variable name in the first line must be AIG4PG_ENCRYPTION_SYMMETRIC_KEY,
-    # and its corresponding value will be used for this encryption process.
-    for idx, line in enumerate(lines):
-        line = line.strip()
-        tokens = line.split(" : ")
-        if idx == 0:
-            if tokens[0] != "AIG4PG_ENCRYPTION_SYMMETRIC_KEY":
-                print(
-                    "ERROR: first line must be AIG4PG_ENCRYPTION_SYMMETRIC_KEY : your-encryption-key"
-                )
-                file_has_errors = True
-        if len(tokens) != 2:
-            print(
-                "ERROR: line {} has {} tokens, expected 2".format(idx + 1, len(tokens))
-            )
-            file_has_errors = True
-
-    if file_has_errors == True:
-        print("ERROR: file has errors, aborting, please correct the file and try again")
-        return
-
-    for idx, line in enumerate(lines):
-        line = line.strip()
-        tokens = line.split(" : ")
-        if idx == 0:
-            encryption_key = tokens[1].strip()
-            print("using encryption_key: {}".format(encryption_key))
-            os.environ["AIG4PG_ENCRYPTION_SYMMETRIC_KEY"] = encryption_key
-            if ConfigService.symmetric_encryption_key() == encryption_key:
-                print("Ok encryption_key has been set in ConfigService")
-                line = ps1_line_template.format(
-                    "AIG4PG_ENCRYPTION_SYMMETRIC_KEY", encryption_key
-                )
-                output_lines.append("")
-                output_lines.append(line)
-            else:
-                print("ERROR: encryption_key has not been set in ConfigService")
-                file_has_errors = True
-                return
-        else:
-            if file_has_errors == False:
-                env_var_name = tokens[0].strip()
-                env_var_value = tokens[1].strip()
-                encrypted = ConfigService.sym_encrypt(env_var_value)
-                decrypted = ConfigService.sym_decrypt(encrypted)
-                if env_var_value == decrypted:
-                    ps1_line_template = (
-                        '[Environment]::SetEnvironmentVariable("{}", "{}", "User")'
-                    )
-                    line = ps1_line_template.format(env_var_name, encrypted)
-                    output_lines.append("")
-                    output_lines.append("# original value {}".format(env_var_value))
-                    output_lines.append(line)
-                else:
-                    print(
-                        "ERROR: encryption/decryption mismatch for line {}".format(line)
-                    )
-                    file_has_errors = True
-
-    if file_has_errors == False:
-        FS.write_lines(output_lines, "tmp/encrypted_envvars.ps1")
-
-
 def filter_files_list(files_list, suffix):
     filtered = list()
     for f in files_list:
@@ -431,7 +310,6 @@ def create_libraries_cypher_load_statements(graphname, count):
     library_docs_list, developers = list(), dict()
     cypher_statements, edge_statements = list(), list()
     library_count, developer_count, exception_count = 0, 0, 0
-
     cypher_statements.append('SET search_path = ag_catalog, "$user", public;')
 
     # Load the libraries documents into a list for subsequent iteration
@@ -629,46 +507,6 @@ def truncate_scrub_str(s, max_len):
         return s2
 
 
-def create_airports_tsv():
-    """
-    This method creates a TSV file that can be loaded into the
-    Azure PostgreSQL airports table, from a psql terminal on your
-    Win 11 laptop, with the following command:
-
-    \COPY airports FROM '/Users/chjoakim/github/AIGraph4pg/data/openflights/airports.tsv' WITH (FORMAT CSV, DELIMITER E'\t');
-
-    Change '/Users/chjoakim/github/' to your actual path for the
-    AIGraph4pg project on your computer.
-    """
-    infile = "../data/openflights/airports.json"
-    outfile = "../data/openflights/airports.tsv"
-    airports = FS.read_json(infile) #, encoding="cp1252")
-    tsv_lines = list()
-    for idx, a in enumerate(airports):
-        # Note the quoting of the last field, the JSONB column, and
-        # how the how the following json.dumps() call produces double quotes.
-        # The JSONB file in the TSV file thus looks like this:
-        # "{""airport_id"": ""1"", ""name"": ""Goroka Airport"", ...
-        if is_valid_us_airport(a):
-            template = "{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t\"{}\""
-            line = template.format(
-                idx + 1,
-                a["name"],
-                a["city"],
-                a["country"],
-                a["iata"],
-                a["icao"],
-                a["tz"],
-                a["tz_offset"],
-                float(a["latitude"]),
-                float(a["longitude"]),
-                int(a["altitude"]),
-                json.dumps(a).replace('\"', '\"\"')
-            )
-            tsv_lines.append(convert_to_utf8(line))
-    FS.write_lines(tsv_lines, outfile)
-    print("{} lines".format(len(tsv_lines)))
-
 def is_valid_library(a):
     if a['name'].strip().lower() in OMIT_LIBS:
         return False
@@ -679,25 +517,6 @@ def release_count(doc):
         return int(doc["release_count"].strip())
     except:
         return 0
-
-def is_valid_us_airport(a):
-    try:
-        if a["country"].strip().lower() != "united states":
-            return False  
-        if len(a["name"].strip()) < 10:
-            return False
-        if len(a["city"].strip()) < 3:
-            return False
-        if len(a["tz"].strip()) < 3:
-            return False
-        if len(a["iata"].strip()) < 3:
-            return False
-        if a["iata"].strip().upper() == "TZR":
-            return False  # possibly bad data; ohio or hungary?
-        return True
-    except:
-        pass
-    return False
 
 
 def convert_to_utf8(s):
@@ -724,16 +543,7 @@ def zip_dumps():
         logging.exception(e, stack_info=True, exc_info=True)
 
 def ad_hoc_development():
-    q = SampleQuery()
-    q.set_name("Count the rows")
-    q.set_type("sql")
-    q.append_to_text("select * ")
-    q.append_to_text("from t444;")
-    print(q.get_data())
-    print(q.is_valid())
-
-    queries = SampleQueries.read_queries()
-    FS.write_json(queries, "tmp/sample_queries.json")
+    pass
 
 
 if __name__ == "__main__":
@@ -761,22 +571,12 @@ if __name__ == "__main__":
                 gen_pg_dump_script()
             elif func == "gen_all":
                 gen_all()
-            elif func == "encryption_example":
-                encryption_example()
-            elif func == "encrypt_your_env_values":
-                infile = sys.argv[2]
-                encrypt_your_env_values(infile)
-
+            elif func == "create_libraries_tsv":
+                create_libraries_tsv()   
             elif func == "create_libraries_cypher_load_statements":
                 graphname = sys.argv[2]
                 count = int(sys.argv[3])
                 create_libraries_cypher_load_statements(graphname, count)
-
-            elif func == "create_airports_tsv":
-                create_airports_tsv()  
-            elif func == "create_libraries_tsv":
-                create_libraries_tsv()   
-
             elif func == "zip_dumps":
                 zip_dumps()
             elif func == "ad_hoc":

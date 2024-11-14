@@ -10,6 +10,8 @@ This project is similar to the [CosmosAIGraph](https://aka.ms/caig)
 project as it demonstrates the **GraphRAG** and **OmniRAG** patterns,
 but with **Azure Database for PostgreSQL** instead of **Azure Cosmos DB**.
 
+**At this time this project is in "BETA" status; not yet fully implemented and documented.  Final v1 is expected at the end of November 2024.**
+
 ## Specifically, this reference application demonstrates the following:
 
 - Using the Azure Database for PostgreSQL with **Python**

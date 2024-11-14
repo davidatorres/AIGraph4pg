@@ -182,12 +182,12 @@ command          description
 \pset pager 1    Turn output pagination on
 \x on            Turn on mysql-like \G output
 \x off           Turn off mysql-like \G output
-\echo :AUTOCOMMIT
-SET AUTOCOMMIT { = | TO } { ON | OFF }
 ```
 
 
 ```
     \COPY libraries2 FROM '/Users/chjoakim/github/AIGraph4pg/data/data/pypi/libraries.tsv' WITH (FORMAT CSV, DELIMITER E'\t');
 
+cat .\load_libraries1.txt | grep rows | Measure-Object -line
+178270
 ```

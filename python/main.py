@@ -3,15 +3,10 @@ Usage:
     python main.py log_defined_env_vars
     python main.py list_pg_extensions_and_settings
     python main.py delete_define_libraries_table
-    python main.py delete_define_libraries2_table
-    python main.py delete_define_airports_table
-    python main.py load_libraries_table
-    python main.py create_libraries_table_vector_index sql/libraries_ivfflat_index.sql
+    python main.py create_libraries_table_vector_index
     python main.py vector_search_similar_libraries flask 10
     python main.py vector_search_words word1 word2 word3 etc
     python main.py vector_search_words running calculator miles kilometers pace speed mph
-    python main.py load_age_graph ../data/cypher/us_openflights.txt
-    python main.py load_age_graph ../data/cypher/libraries.txt
 Options:
   -h --help     Show this screen.
   --version     Show version.
@@ -24,7 +19,6 @@ import os
 import sys
 import traceback
 
-import psycopg
 import psycopg_pool
 
 from docopt import docopt
@@ -124,77 +118,43 @@ async def list_pg_extensions_and_settings(pool: psycopg_pool.AsyncConnectionPool
     Query several tables such as pg_extension, and
     pg_available_extensions and display the resulting rows.
     """
-    queries = list()
-    queries.append("SELECT * FROM pg_extension")
-    queries.append("SELECT * FROM pg_available_extensions")
-    # queries.append("SELECT * FROM pg_settings")
+    queries, lines = list(), list()
+    queries.append("select * FROM pg_extension")
+    queries.append("select * FROM pg_available_extensions")
+    queries.append("select * FROM pg_settings")
 
     for query in queries:
+        lines.append("---")
+        lines.append(query)
         rows = await execute_query(pool, query)
         for row in rows:
             logging.info(row)
+            lines.append(str(row))
+
+    FS.write_lines(lines, "tmp/pg_extensions_and_settings.txt")
 
 
 async def delete_define_table(
         pool: psycopg_pool.AsyncConnectionPool,
         ddl_filename: str,
         tablename: str):
-
     ddl = FS.read(ddl_filename)
     logging.info(ddl)
-
     async with pool.connection() as conn:
         async with conn.cursor() as cursor:
             await cursor.execute(ddl)
 
-    validation_queries = list()
-    validation_queries.append(
-        "select * FROM information_schema.tables WHERE table_schema='public';"
-    )
-    validation_queries.append(
-        "SELECT column_name, data_type, character_maximum_length FROM information_schema.columns WHERE table_name = '{}';".format(
+    validation_queries = [
+        "select * FROM information_schema.tables WHERE table_schema='public';",
+        "select column_name, data_type, character_maximum_length FROM information_schema.columns WHERE table_name = '{}';".format(
             tablename)
-    )
+    ]
     for validation_query in validation_queries:
         logging.info("==========")
         logging.info("validation_query: {}".format(validation_query))
         rows = await execute_query(pool, validation_query)
         for row in rows:
             logging.info(row)
-
-async def load_libraries_table(pool: psycopg_pool.AsyncConnectionPool):
-    data_dir = "../data/pypi/wrangled_libs"
-    logging.info("load_libraries_table, data_dir: {}".format(data_dir))
-    files_list = FS.list_files_in_dir(data_dir)
-    filtered_files_list = filter_files_list(files_list, ".json")
-    rows_loaded_count, exceptions_count = 0, 0
-
-    logging.info("data files count: {}".format(len(filtered_files_list)))
-
-    async with pool.connection() as conn:
-        async with conn.cursor() as cursor:
-            for file_idx, data_filename in enumerate(filtered_files_list):
-                fq_filename = None
-                try:
-                    fq_filename = "{}/{}".format(data_dir, data_filename)
-                    logging.info("data_file {}: {}".format(file_idx, fq_filename))
-                    doc = FS.read_json(fq_filename)
-                    sql = build_insert_library_sql(doc)
-                    if sql is not None:
-                        await cursor.execute("BEGIN transaction;")
-                        await cursor.execute(sql)
-                        await cursor.execute("COMMIT transaction;")
-                        rows_loaded_count = rows_loaded_count + 1
-                except Exception as e:
-                    exceptions_count = exceptions_count + 1
-                    logging.error("Error processing file: {}".format(fq_filename))
-                    logging.info(str(e))
-                    await cursor.execute("ROLLBACK transaction;")
-
-    logging.info(
-        "load_libraries_table, rows_loaded_count: {}".format(rows_loaded_count)
-    )
-    logging.info("load_libraries_table, exceptions_count:  {}".format(exceptions_count))
 
 
 def filter_files_list(files_list, suffix):
@@ -285,10 +245,11 @@ def libraries_column_names(include_id=True):
 
 
 async def create_libraries_table_vector_index(
-    pool: psycopg_pool.AsyncConnectionPool, index_filename
+    pool: psycopg_pool.AsyncConnectionPool
 ):
     # See https://learn.microsoft.com/en-us/azure/postgresql/flexible-server/how-to-optimize-performance-pgvector#indexing
 
+    index_filename = "sql/libraries_ivfflat_index.sql"
     logging.info(
         "create_libraries_table_vector_index, index_filename: {}".format(index_filename)
     )
@@ -369,67 +330,8 @@ async def vector_search_words(pool: psycopg_pool.AsyncConnectionPool):
         logging.critical(str(e))
 
 
-async def load_age_graph(pool: psycopg_pool.AsyncConnectionPool, infile: str):
-    cypher_statements = FS.read_lines(infile)
-    print("cypher_statements read; count: {}".format(len(cypher_statements)))
-
-    # SET search_path = ag_catalog, "$user", public;
-    # SELECT ag_catalog.create_graph('usair1');
-    # SELECT * FROM ag_catalog.ag_graph;
-
-    async with pool.connection() as conn:
-        async with conn.cursor() as cursor:
-            for idx, sql in enumerate(cypher_statements):
-                try:
-                    if idx == 0:
-                        set_path = set_age_search_path_sql()
-                        logging.info("setting path: {}".format(set_path))
-                        await cursor.execute("BEGIN transaction;")
-                        await cursor.execute(set_path)
-                        await cursor.execute("COMMIT transaction;")
-                        logging.info("path set, awaiting 10 seconds...")
-                        await asyncio.sleep(10)
-                    print("executing: {} {}".format(idx, sql))
-                    await cursor.execute("BEGIN transaction;")
-                    await cursor.execute(sql)
-                    await cursor.execute("COMMIT transaction;")
-                    print("ok: {} {}".format(idx, sql))
-                except Exception as e:
-                    logging.error("Error processing idx: {} sql: {}".format(idx, sql))
-                    logging.info(str(e))
-                    await cursor.execute("ROLLBACK transaction;")
-
-
-async def load_age_graph_libraries(pool: psycopg_pool.AsyncConnectionPool, infile: str):
-    cypher_statements = FS.read_json(infile)
-    for cypher in cypher_statements:
-        sql = cypher_sql("g1", cypher)
-        print(sql)
-
-    async with pool.connection() as conn:
-        async with conn.cursor() as cursor:
-            for idx, cypher_stmt in enumerate(cypher_statements):
-                if idx < 3:
-                    sql = None
-                    try:
-                        logging.info("idx: {}, cypher_stmt {}".format(idx, cypher_stmt))
-                        sql = cypher_sql("g1", cypher_stmt)
-                        print(sql)
-                        if True:
-                            await cursor.execute("BEGIN transaction;")
-                            await cursor.execute(sql)
-                            await cursor.execute("COMMIT transaction;")
-                    except Exception as e:
-                        logging.error("Error processing sql: {}".format(sql))
-                        logging.info(str(e))
-                        await cursor.execute("ROLLBACK transaction;")
-
-
-def set_age_search_path_sql():
-    return 'SET search_path = ag_catalog, "$user", public;'
-
-
 async def example_async_method(pool: psycopg_pool.AsyncConnectionPool):
+    """ This method is intended a sample for creating new async methods. """
     await asyncio.sleep(0.1)
 
 
@@ -453,22 +355,11 @@ async def async_main():
                 log_defined_env_vars()
             elif func == "list_pg_extensions_and_settings":
                 await list_pg_extensions_and_settings(pool)
-
             elif func == "delete_define_libraries_table":
                 await delete_define_table(
                     pool, "sql/libraries_ddl.sql", "libraries")
-            elif func == "delete_define_libraries2_table":
-                await delete_define_table(
-                    pool, "sql/libraries2_ddl.sql", "libraries2")
-            elif func == "delete_define_airports_table":
-                await delete_define_table(
-                    pool, "sql/airports_ddl.sql", "airports")
-                
-            elif func == "load_libraries_table":
-                await load_libraries_table(pool)
             elif func == "create_libraries_table_vector_index":
-                index_filename = sys.argv[2].lower()
-                await create_libraries_table_vector_index(pool, index_filename)
+                await create_libraries_table_vector_index(pool)
             elif func == "vector_search_similar_libraries":
                 library_name = sys.argv[2].lower()
                 count = int(sys.argv[3])
@@ -476,9 +367,6 @@ async def async_main():
             elif func == "vector_search_words":
                 library_name = sys.argv[2].lower()
                 await vector_search_words(pool)
-            elif func == "load_age_graph":
-                infile = sys.argv[2]
-                await load_age_graph(pool, infile)
             else:
                 print_options("- unknown command-line arg: {}".format(func))
     except Exception as e:
