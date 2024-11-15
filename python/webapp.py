@@ -350,6 +350,50 @@ async def execute_vector_search(embedding) -> list:
         logging.exception(e, stack_info=True, exc_info=True)
     return result_list
 
+# ---
+
+@app.get("/opencypher_gen_console")
+async def get_opencypher_gen_console(req: Request):
+    view_data = opencypher_gen_console_view_data()
+    return views.TemplateResponse(
+        request=req, name="opencypher_gen_console.html", context=view_data
+    )
+
+
+@app.post("/opencypher_gen_console")
+async def post_opencypher_gen_console(req: Request):
+    form_data = await req.form()
+    logging.info("/opencypher_gen_console form_data: {}".format(form_data))
+    view_data = opencypher_gen_console_view_data()
+    natural_language = form_data.get("natural_language")
+    cypher = form_data.get("cypher")
+
+    if natural_language is not None:
+        view_data["natural_language"] = natural_language
+        # TODO - call the AI service to generate the Cypher
+
+    elif cypher is not None:
+        view_data["cypher"] = cypher
+        # TODO - execute the given cypher query
+
+    return views.TemplateResponse(
+        request=req, name="opencypher_gen_console.html", context=view_data
+    )
+
+
+def opencypher_gen_console_view_data(query_text=""):
+    """
+    Return an initial dict with all fields necessary for the
+    opencypher_gen_console.html view.
+    """
+    view_data = dict()
+    view_data["natural_language"] = ""
+    view_data["cypher"] = ""
+    view_data["results_message"] = ""
+    view_data["results"] = ""
+    view_data["elapsed"] = ""
+    return view_data
+
 
 def get_database_connection_string():
     db = ConfigService.postgresql_database()
