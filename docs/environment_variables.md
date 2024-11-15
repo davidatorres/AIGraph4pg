@@ -43,4 +43,3 @@ Please see the **dotenv_example** files in each subapplication for examples.
 
 It is important for you to have a **.gitignore** entry for the **.env** file
 so that application secrets don't get leaked into your source control system.
-

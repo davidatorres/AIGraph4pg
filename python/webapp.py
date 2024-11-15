@@ -153,14 +153,14 @@ async def post_query_console(req: Request):
                     logging.info("query_console - stmt executed")
 
                     async for row in cursor:
-                        print("row: {} {} {}".format(row, len(row), str(type(row))))
+                        logging.info("row: {} {} {}".format(len(row), str(type(row)), row))
                         result_objects.append(row)
                         results_list.append(str(row))
                     view_data["elapsed"] = "elapsed: {}".format(time.time() - start_time)
                     view_data["results_message"] = "Results:"
                     view_data["results"] = "\n".join(results_list)
                     view_data["query_text"] = query_text
-                    write_query_results_to_file(view_data, result_objects)
+                    #write_query_results_to_file(view_data, result_objects)
         except Exception as e:
             logging.critical((str(e)))
             view_data["results_message"] = "Error:"
@@ -173,37 +173,6 @@ async def post_query_console(req: Request):
 
 def write_query_results_to_file(view_data, result_objects):
 # TODO - extract this logic to a util class
-
-# 2024-11-14 16:38:39,677 - query_console - stmt: SELECT oid, extname, extversion FROM pg_extension;
-# 2024-11-14 16:38:39,723 - query_console - stmt executed
-# row: (14258, 'plpgsql', '1.0') 3 <class 'tuple'>
-# row: (24760, 'vector', '0.7.0') 3 <class 'tuple'>
-# row: (25081, 'age', '1.5.0') 3 <class 'tuple'>
-
-# 2024-11-14 16:39:42,516 - query_console - stmt: SELECT * FROM ag_catalog.ag_graph;
-# 2024-11-14 16:39:42,562 - query_console - stmt executed
-# row: (106293, 'libraries1', 'libraries1') 3 <class 'tuple'>
-
-# 2024-11-14 16:40:30,189 - query_console - stmt: select count(*) from libraries;
-# 2024-11-14 16:40:30,235 - query_console - stmt executed
-# row: (10761,) 1 <class 'tuple'>
-
-# 2024-11-14 16:41:43,236 - query_console - stmt: select id, name, keywords from libraries limit 3
-# 2024-11-14 16:41:43,289 - query_console - stmt executed
-# row: (1, '2captcha-python', '') 3 <class 'tuple'>
-# row: (2, '2to3', '2to3') 3 <class 'tuple'>
-# row: (3, 'a2wsgi', '') 3 <class 'tuple'>
-
-# 2024-11-14 16:42:22,834 - query_console - stmt: SELECT * FROM ag_catalog.cypher('libraries1',  $$ MATCH (n) RETURN count(n) as count $$)  as (v agtype);
-# 2024-11-14 16:42:22,905 - query_console - stmt executed
-# row: ('21312',) 1 <class 'tuple'>
-
-# 2024-11-14 16:42:51,439 - query_console - stmt: SELECT * FROM ag_catalog.cypher('libraries1',  $$ MATCH (dev:Developer) RETURN dev limit 10 $$)  as (v agtype);
-# 2024-11-14 16:42:51,487 - query_console - stmt executed
-# row: ('{"id": 844424930131969, "label": "Developer", "properties": {"name": "info@2captcha.com"}}::vertex',) 1 <class 'tuple'>
-# row: ('{"id": 844424930131970, "label": "Developer", "properties": {"name": "xoviat"}}::vertex',) 1 <class 'tuple'>
-
-# row: ('[{"id": 1407374883553290, "label": "uses_lib", "end_id": 1125899906851581, "start_id": 1125899906842630, "properties": {}}::edge, {"id": 1407374883587559, "label": "uses_lib", "end_id": 1125899906851227, "start_id": 1125899906851581, "properties": {}}::edge, {"id": 1407374883586028, "label": "uses_lib", "end_id": 1125899906853118, "start_id": 1125899906851227, "properties": {}}::edge, {"id": 1407374883592102, "label": "uses_lib", "end_id": 1125899906851227, "start_id": 1125899906853118, "properties": {}}::edge, {"id": 1407374883586023, "label": "uses_lib", "end_id": 1125899906850362, "start_id": 1125899906851227, "properties": {}}::edge]',) 1 <class 'tuple'>
     try:
         # write the results to a tmp file for visual inspection
         fs_data, json_rows = dict(), list()
@@ -218,24 +187,26 @@ def write_query_results_to_file(view_data, result_objects):
             json_row = list()
             json_rows.append(json_row)
             if type(t) == tuple:
+                logging.warning("t is a TUPLE: {} {}".format(type(t), t))
                 for elem in t:
                     if isinstance(elem, str):
                         if "::" in elem:
-                            jstr = elem.split("::")[0].strip()
-                            obj = json.loads(elem.split("::")[0])
-                            print("obj: {} {}".format(obj, type(obj)))
-                            json_row.append(obj)
+                            # jstr = elem.split("::")[0].strip()
+                            # obj = json.loads(elem.split("::")[0])
+                            # print("obj: {} {}".format(obj, type(obj)))
+                            json_row.append(elem)
                         else:
                             json_row.append(elem)
                     else:
                         json_row.append(elem)
             else:
+                logging.warning("t is NOT A TUPLE: {} {}".format(type(t), t))
                 json_row.append(elem)
         fs_data["json_objects"] = json_rows
     except Exception as e2:
         logging.warning(str(e2))
         logging.warning(traceback.format_exc())
-    FS.write_json(fs_data, "tmp/search_{}.json".format(int(time.time())))
+    FS.write_json(fs_data, "tmp/query_{}.json".format(int(time.time())))
 
 
 def query_console_view_data(query_text=""):

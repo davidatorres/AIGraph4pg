@@ -6,7 +6,7 @@
 - [Apache Age Quick Start](https://age.apache.org/getstarted/quickstart/)
 - [Apache Age Manual](https://age.apache.org/age-manual/master/intro/overview.html)
 - [Introducing support for Graph data in Azure Database for PostgreSQL](https://techcommunity.microsoft.com/t5/azure-database-for-postgresql/introducing-support-for-graph-data-in-azure-database-for/ba-p/4275628)
-
+- [AGE types](https://age.apache.org/age-manual/master/intro/types.html)
 
 ### More Links
 

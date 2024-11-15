@@ -58,12 +58,23 @@
 - https://opencypher.org/references/#gql
 - https://s3.amazonaws.com/artifacts.opencypher.org/openCypher9.pdf
 - https://s3.amazonaws.com/artifacts.opencypher.org/website/materials/DM32.2/DM32.2-2018-00126.The.GQL.Manifesto.pdf
+- https://pypi.org/project/apache-age-python/
+- https://github.com/apache/age/tree/master/drivers/python
 
 ### openCypher GenAI
 
 - https://towardsdatascience.com/evaluating-llms-in-cypher-statement-generation-c570884089b3
 - https://python.langchain.com/docs/integrations/graphs/apache_age/
 - https://medium.com/neo4j/generating-cypher-queries-with-chatgpt-4-on-any-graph-schema-a57d7082a7e7
+
+### Azure Samples
+
+- https://github.com/Azure-Samples/rag-postgres-openai-python
+- https://github.com/Azure-Samples/Azure-PostgreSQL-Resilience-Architecture
+- https://github.com/Azure-Samples/linux-postgres-migration
+- https://github.com/Azure-Samples/azure-postgres-pgvector-python
+- https://github.com/Azure-Samples/msdocs-fastapi-postgresql-sample-app
+- https://github.com/Azure-Samples/azure-fastapi-cosmos-postgres-aca
 
 ### Semantic Kernel
 

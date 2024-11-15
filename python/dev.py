@@ -4,7 +4,6 @@ and not for users of the project.  It is used to generate various
 files and code artifacts.
 Usage:
     python dev.py log_defined_env_vars
-    ---
     python dev.py gen_dotenv_examples
     python dev.py gen_ps1_env_var_script
     python dev.py gen_docker_compose_fragment
@@ -12,7 +11,6 @@ Usage:
     python dev.py gen_environment_variables_md
     python dev.py gen_pg_dump_script
     python dev.py gen_all
-    ---
     python dev.py create_libraries_tsv
     python dev.py create_libraries_cypher_load_statements <graphname> <count>
     python dev.py create_libraries_cypher_load_statements libraries1 999999

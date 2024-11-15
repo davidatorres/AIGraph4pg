@@ -58,14 +58,8 @@ select count(*) from libraries;
 
 --name SQL: Library rows in table
 --text
-select id, name, libtype from libraries offset 0 limit 10;
+select id, name, release_count, description from libraries offset 0 limit 10;
 --end
-
-
-
-
-
-
 
 
 --name CYPHER: Count Library vertices in graph
