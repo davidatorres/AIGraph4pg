@@ -5,11 +5,14 @@
 
 New-Item -ItemType Directory -Force -Path .\tmp | out-null
 
-echo 'activating the venv ...'
+Write-Host 'activating the venv ...'
 .\venv\Scripts\Activate.ps1
 
-echo '.env file contents ...'
+Write-Host 'removing tmp files ...'
+del tmp\*.*
+
+Write-Host '.env file contents ...'
 cat .env 
 
-#hypercorn webapp:app --bind 127.0.0.1:8000 --workers 1 
-uvicorn webapp:app --port 8000 --reload
+hypercorn webapp:app --bind 127.0.0.1:8000 --workers 1 --reload
+#uvicorn webapp:app --port 8000 --reload

@@ -34,6 +34,7 @@ from src.services.ai_service import AiService
 from src.services.config_service import ConfigService
 from src.services.logging_level_service import LoggingLevelService
 from src.util.fs import FS
+from src.util.query_result_parser import QueryResultParser
 from src.util.sample_queries import SampleQueries
 
 # standard initialization
@@ -125,11 +126,12 @@ async def post_query_console(req: Request):
     logging.info("/query_console form_data: {}".format(form_data))
     query_text = form_data.get("query_text").strip()
     view_data = query_console_view_data(query_text)
+    qrp = QueryResultParser()
 
     if len(query_text) > 10:
         logging.info("query_console - query_text: {}".format(query_text))
         results_list : list[str] = list()
-        result_objects : list[dict] = list()
+        result_objects = list()
         start_time = time.time()
         try:
             conn_str = get_database_connection_string()
@@ -154,13 +156,15 @@ async def post_query_console(req: Request):
 
                     async for row in cursor:
                         logging.info("row: {} {} {}".format(len(row), str(type(row)), row))
-                        result_objects.append(row)
+                        result_objects.append(qrp.parse(row))
                         results_list.append(str(row))
                     view_data["elapsed"] = "elapsed: {}".format(time.time() - start_time)
-                    view_data["results_message"] = "Results:"
+                    view_data["results_message"] = "Results as JSON and python tuples:"
                     view_data["results"] = "\n".join(results_list)
                     view_data["query_text"] = query_text
-                    #write_query_results_to_file(view_data, result_objects)
+                    view_data["json_results"] = json.dumps(
+                        result_objects, sort_keys=False, indent=2)
+                    write_query_results_to_file(view_data, result_objects)
         except Exception as e:
             logging.critical((str(e)))
             view_data["results_message"] = "Error:"
@@ -172,37 +176,15 @@ async def post_query_console(req: Request):
     )
 
 def write_query_results_to_file(view_data, result_objects):
-# TODO - extract this logic to a util class
+    """
+    Write the query results to a JSON file for visual inspection.
+    """
     try:
-        # write the results to a tmp file for visual inspection
-        fs_data, json_rows = dict(), list()
+        fs_data = dict()
         fs_data["query_text"] = view_data["query_text"]
         fs_data["results_message"] = view_data["results_message"]
         fs_data["elapsed"] = view_data["elapsed"]
-        fs_data["json_objects"] = []
         fs_data["result_objects"] = result_objects
-
-        for t in result_objects:
-            # t is a tup in various forms per the query
-            json_row = list()
-            json_rows.append(json_row)
-            if type(t) == tuple:
-                logging.warning("t is a TUPLE: {} {}".format(type(t), t))
-                for elem in t:
-                    if isinstance(elem, str):
-                        if "::" in elem:
-                            # jstr = elem.split("::")[0].strip()
-                            # obj = json.loads(elem.split("::")[0])
-                            # print("obj: {} {}".format(obj, type(obj)))
-                            json_row.append(elem)
-                        else:
-                            json_row.append(elem)
-                    else:
-                        json_row.append(elem)
-            else:
-                logging.warning("t is NOT A TUPLE: {} {}".format(type(t), t))
-                json_row.append(elem)
-        fs_data["json_objects"] = json_rows
     except Exception as e2:
         logging.warning(str(e2))
         logging.warning(traceback.format_exc())
@@ -220,6 +202,7 @@ def query_console_view_data(query_text=""):
     view_data["query_text"] = query_text
     view_data["results_message"] = ""
     view_data["results"] = ""
+    view_data["json_results"] = ""
     view_data["elapsed"] = ""
     return view_data
 

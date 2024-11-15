@@ -215,3 +215,14 @@ SELECT * FROM ag_catalog.cypher('libraries1',
   $$ MATCH (lib:Library)-[r:uses_lib*5]->() RETURN r limit 10 $$)
   as (v agtype);
 ```
+
+
+```
+SELECT * FROM ag_catalog.cypher('libraries1',
+  $$ MATCH (x:Library {"name":"flask"})-[r:uses_lib]->() RETURN r limit 10 $$)
+  as (v agtype);
+
+SELECT * FROM ag_catalog.cypher('libraries1',
+  $$ MATCH (v:Library {"name":"flask"}) RETURN v limit 10 $$)
+  as (v agtype);
+```

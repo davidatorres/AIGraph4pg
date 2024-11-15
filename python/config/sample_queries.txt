@@ -121,3 +121,13 @@ SELECT * FROM ag_catalog.cypher('libraries1',
   $$ MATCH ()-[r:uses_lib]->() RETURN r limit 10 $$)
   as (v agtype);
 --end
+
+
+--name CYPHER: Show one library; Flask
+--text
+SELECT * FROM ag_catalog.cypher('libraries1',
+  $$ MATCH (v:Library {name:"flask"}) RETURN v limit 10 $$)
+  as (v agtype);
+--end
+
+
