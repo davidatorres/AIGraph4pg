@@ -55,6 +55,53 @@ else:
         )
     )
 
+POOL = None
+
+def get_database_connection_string():
+    db = ConfigService.postgresql_database()
+    user = ConfigService.postgresql_user()
+    password = ConfigService.postgresql_password()
+    host = ConfigService.postgresql_server()
+    port = ConfigService.postgresql_port()
+    conn_str = "host={} port={} dbname={} user={} password={}".format(
+        host, port, db, user, password
+    )
+    logging.info(
+        "get_database_connection_string: {} password=<omitted>".format(
+            conn_str.split("password")[0]
+        )
+    )
+    return conn_str
+
+async def initialize_async_services():
+    global POOL
+    try:
+        conn_str = get_database_connection_string()
+        POOL = psycopg_pool.AsyncConnectionPool(conninfo=conn_str, open=False)
+        logging.info("initialze_pool, pool created: {}".format(POOL))
+        await POOL.open()
+        await POOL.check()
+        logging.info("initialize_async_services, POOL opened")
+    except Exception as e:
+        logging.error("initialize_async_services - exception: {}".format(str(e)))
+        logging.error(traceback.format_exc())
+
+event_loop = None
+try:
+    event_loop = asyncio.get_running_loop()
+except:
+    pass
+logging.error("event_loop: {}".format(event_loop))
+
+if event_loop is not None:
+    # this path is for running in a Docker container with uvicorn
+    logging.error("asyncio event_loop is not None")
+    task = asyncio.create_task(initialize_async_services())
+else:
+    # this path is for running as a Python script
+    logging.error("asyncio event_loop is None")
+    asyncio.run(initialize_async_services())    
+
 
 app = FastAPI()
 app.mount("/static", StaticFiles(directory="static"), name="static")
@@ -338,6 +385,7 @@ async def execute_vector_search(embedding) -> list:
     try:
         conn_str = get_database_connection_string()
         sql = libraries_vector_search_sql(embedding)
+        #async with POOL.connection() as conn:
         async with await psycopg.AsyncConnection.connect(
             conn_str, autocommit=True
         ) as conn:
@@ -394,19 +442,3 @@ def opencypher_gen_console_view_data(query_text=""):
     view_data["elapsed"] = ""
     return view_data
 
-
-def get_database_connection_string():
-    db = ConfigService.postgresql_database()
-    user = ConfigService.postgresql_user()
-    password = ConfigService.postgresql_password()
-    host = ConfigService.postgresql_server()
-    port = ConfigService.postgresql_port()
-    conn_str = "host={} port={} dbname={} user={} password={}".format(
-        host, port, db, user, password
-    )
-    logging.info(
-        "get_database_connection_string: {} password=<omitted>".format(
-            conn_str.split("password")[0]
-        )
-    )
-    return conn_str
