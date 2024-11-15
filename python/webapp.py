@@ -130,7 +130,7 @@ async def post_query_console(req: Request):
 
     if len(query_text) > 10:
         logging.info("query_console - query_text: {}".format(query_text))
-        results_list : list[str] = list()
+        results_tuples : list[str] = list()
         result_objects = list()
         start_time = time.time()
         try:
@@ -157,10 +157,10 @@ async def post_query_console(req: Request):
                     async for row in cursor:
                         logging.info("row: {} {} {}".format(len(row), str(type(row)), row))
                         result_objects.append(qrp.parse(row))
-                        results_list.append(str(row))
+                        results_tuples.append(str(row))
                     view_data["elapsed"] = "elapsed: {}".format(time.time() - start_time)
                     view_data["results_message"] = "Results as JSON and python tuples:"
-                    view_data["results"] = "\n".join(results_list)
+                    view_data["results"] = "\n".join(results_tuples)
                     view_data["query_text"] = query_text
                     view_data["json_results"] = json.dumps(
                         result_objects, sort_keys=False, indent=2)
@@ -174,6 +174,7 @@ async def post_query_console(req: Request):
     return views.TemplateResponse(
         request=req, name="query_console.html", context=view_data
     )
+
 
 def write_query_results_to_file(view_data, result_objects):
     """
@@ -193,7 +194,7 @@ def write_query_results_to_file(view_data, result_objects):
 
 def query_console_view_data(query_text=""):
     """
-    Return an initial dict with the fields necessary for the
+    Return an initial dict with all fields necessary for the
     query_console.html view.
     """
     view_data = dict()

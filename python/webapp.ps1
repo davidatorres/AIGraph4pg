@@ -7,6 +7,7 @@ New-Item -ItemType Directory -Force -Path .\tmp | out-null
 
 Write-Host 'activating the venv ...'
 .\venv\Scripts\Activate.ps1
+python --version
 
 Write-Host 'removing tmp files ...'
 del tmp\*.*

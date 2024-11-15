@@ -24,7 +24,6 @@ class QueryResultParser:
         string values like '::vertex' and '::edge' that are handled here.
         """
         print('parse() {} {}'.format(query_result, str(type(query_result))))
-        parsed_values = list()
         try:
             if isinstance(query_result, tuple):
                 if len(query_result) == 1:
@@ -33,18 +32,17 @@ class QueryResultParser:
                     if isinstance(elem, str):
                         colon_pair_count = elem.count('::')
                         if colon_pair_count == 1:
-                            parsed_values.append(
-                                self.parse_single_colonpair_result(elem))
+                            return self.parse_single_colonpair_result(elem)
                         else:
-                            parsed_values.append(elem)
+                            return elem
                     else:
-                        parsed_values.append(elem)
+                        return elem
                 else:
-                    parsed_values = list(query_result)
+                    return list(query_result)
         except Exception as e:
             logging.error('AgeResultParser - exception:', str(e))
             logging.error(traceback.format_exc())
-        return parsed_values
+        return None
 
     def parse_single_colonpair_result(self, s):
         tokens = s.strip().split('::')
