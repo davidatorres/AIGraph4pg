@@ -4,8 +4,8 @@ Usage:
     python wrangle_legal_cases.py wrangle_step1 /Users/cjoakim/Downloads/cases.sql
     python wrangle_legal_cases.py wrangle_step2 <iterations>
     python wrangle_legal_cases.py wrangle_step2 10
-    python wrangle_legal_cases.py wrangle_step3 <infile>
-    python wrangle_legal_cases.py wrangle_step3 tmp/iteration_5.json
+    python wrangle_legal_cases.py wrangle_step3 <cases-sql-infile> <iteration-infile>
+    python wrangle_legal_cases.py wrangle_step3 /Users/cjoakim/Downloads/cases.sql tmp/iteration_5.json
 Options:
   -h --help     Show this screen.
   --version     Show version.
@@ -51,7 +51,6 @@ def wrangle_step1(cases_sql_infile: str):
     Read the cases.sql file, parse the JSON in each line, and calculate
     each case url and its citations.  
     """
-    infile = "/Users/cjoakim/Downloads/cases.sql"
     print("wrangle_step1, reading infile: {}".format(cases_sql_infile))
     data_lines_read, json_parse_ok, json_parse_fail = 0, 0, 0
     case_id_name_dict = dict()  # key is the case id, value is the case name
@@ -98,7 +97,6 @@ def wrangle_step1(cases_sql_infile: str):
                         print(traceback.format_exc())
                         print("Exception line {} {} tokens: {} prefix: |{}|".format(
                             data_lines_read, len(stripped), len(tokens), stripped[0:40]))
-
 
     elapsed_time = time.time() - start_time
     print("data lines read: {}".format(data_lines_read))
@@ -170,7 +168,7 @@ def wrangle_step2(iteration_count: int):
 
     case_id_name_dict = FS.read_json('tmp/case_id_name_dict.json')
     case_url_dict = FS.read_json('tmp/case_url_dict.json')
-    collected_metadata = dict()
+    collected_metadata = dict()  # key is the case url, value is the metadata
 
     for n in range(iteration_count):
         print("iteration: {}".format(n))
@@ -192,14 +190,54 @@ def wrangle_step2(iteration_count: int):
                                 citation_meta['citations_gathered'] = 0  # not yet gathered
                                 collected_metadata[url] = citation_meta
         else:
-            for collected_url in collected_metadata.keys():
-                print("collected_url: {}".format(collected_url))
+            metadata_keys = collected_metadata.keys()
+            print("iteration {} collected_metadata keys count: {}".format(n, len(metadata_keys)))
+            for collected_url in sorted(metadata_keys):
+                if collected_url in case_url_dict.keys():
+                    meta = case_url_dict[collected_url]
+                    if 'citations_gathered' in meta.keys():
+                        if meta['citations_gathered'] == 1:
+                            pass  # already gathered its' cites_to citations
+                        else:
+                            #print("collected_url: {}".format(collected_url))
+                            for cite_url in meta['__citations']:
+                                if cite_url not in collected_metadata.keys():
+                                    if cite_url in case_url_dict.keys():
+                                        citation_meta = case_url_dict[cite_url]
+                                        citation_meta['iteration'] = n + 1
+                                        citation_meta['citations_gathered'] = 0
+                                        collected_metadata[cite_url] = citation_meta
+                            meta['citations_gathered'] == 1
+        FS.write_json(collected_metadata, 'tmp/iteration_{}.json'.format(n))
 
 
-def wrangle_step3(infile:str):
-    print("wrangle_step3, reading infile: {}".format(infile))
+def wrangle_step3(cases_sql_infile: str, iteration_infile: str):
+    print("wrangle_step3, reading iteration_infile: {}".format(iteration_infile))
+    collected_metadata = FS.read_json(iteration_infile)
+    collected_ids = dict()
+    output_lines = list()
 
+    for url in collected_metadata.keys():
+        meta = collected_metadata[url]
+        id = meta['id']
+        collected_ids[id] = id
+        print("adding id: {}".format(id))
 
+    print("collected_ids size: {}".format(len(collected_ids.keys())))
+
+    with open(cases_sql_infile, "r", encoding='ISO-8859-1') as file:
+        for line in file:
+            stripped = line.strip()
+            if len(stripped) > 10:
+                tokens = stripped.split("\t")
+                if len(tokens) == 3:
+                    id = tokens[0].strip()
+                    if id in collected_ids.keys():
+                        print("match on id: {}".format(id))
+                        output_lines.append(stripped)
+
+    FS.write_lines(output_lines, 'tmp/filtered_cases.sql')
+    print("output_lines size: {}".format(len(output_lines)))
 
 
 if __name__ == "__main__":
@@ -222,8 +260,9 @@ if __name__ == "__main__":
                 iteration_count = int(sys.argv[2])
                 wrangle_step2(iteration_count)
             elif func == "wrangle_step3":
-                infile = sys.argv[2]
-                wrangle_step3(infile)
+                cases_sql_infile = sys.argv[2]
+                iteration_infile = sys.argv[3]
+                wrangle_step3(cases_sql_infile, iteration_infile)
             else:
                 print_options("Error: invalid function: {}".format(func))
         except Exception as e:
