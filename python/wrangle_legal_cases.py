@@ -1,11 +1,15 @@
 """
+Execute the three-step data wrangling process for the cases.sql file
+to reduce it to a smaller set of cases that are linked and suitable
+for use in an Apache AGE graph.  This wrangling process retains the
+original embedding values for each identified legal case.
 Usage:
-    python wrangle_legal_cases.py wrangle_step1 <cases-sql-infile>
-    python wrangle_legal_cases.py wrangle_step1 /Users/cjoakim/Downloads/cases.sql
-    python wrangle_legal_cases.py wrangle_step2 <iterations>
-    python wrangle_legal_cases.py wrangle_step2 10
-    python wrangle_legal_cases.py wrangle_step3 <cases-sql-infile> <iteration-infile>
-    python wrangle_legal_cases.py wrangle_step3 /Users/cjoakim/Downloads/cases.sql tmp/iteration_5.json
+    python wrangle_legal_cases.py step1 <cases-sql-infile>
+    python wrangle_legal_cases.py step1 /Users/cjoakim/Downloads/cases.sql
+    python wrangle_legal_cases.py step2 <iterations>
+    python wrangle_legal_cases.py step2 10
+    python wrangle_legal_cases.py step3 <cases-sql-infile> <iteration-infile>
+    python wrangle_legal_cases.py step3 /Users/cjoakim/Downloads/cases.sql tmp/iteration_5.json
 Options:
   -h --help     Show this screen.
   --version     Show version.
@@ -46,12 +50,12 @@ def print_options(msg):
     print(arguments)
 
 
-def wrangle_step1(cases_sql_infile: str):
+def step1(cases_sql_infile: str):
     """
     Read the cases.sql file, parse the JSON in each line, and calculate
     each case url and its citations.  
     """
-    print("wrangle_step1, reading infile: {}".format(cases_sql_infile))
+    print("step1, reading infile: {}".format(cases_sql_infile))
     data_lines_read, json_parse_ok, json_parse_fail = 0, 0, 0
     case_id_name_dict = dict()  # key is the case id, value is the case name
     seeds = initial_seeds()
@@ -163,8 +167,8 @@ def collect_cites_to(case_doc):
     except Exception as e:
         pass
 
-def wrangle_step2(iteration_count: int):
-    print("wrangle_step2, iteration_count: {}".format(iteration_count))
+def step2(iteration_count: int):
+    print("step2, iteration_count: {}".format(iteration_count))
 
     case_id_name_dict = FS.read_json('tmp/case_id_name_dict.json')
     case_url_dict = FS.read_json('tmp/case_url_dict.json')
@@ -211,8 +215,8 @@ def wrangle_step2(iteration_count: int):
         FS.write_json(collected_metadata, 'tmp/iteration_{}.json'.format(n))
 
 
-def wrangle_step3(cases_sql_infile: str, iteration_infile: str):
-    print("wrangle_step3, reading iteration_infile: {}".format(iteration_infile))
+def step3(cases_sql_infile: str, iteration_infile: str):
+    print("step3, reading iteration_infile: {}".format(iteration_infile))
     collected_metadata = FS.read_json(iteration_infile)
     collected_ids = dict()
     output_lines = list()
@@ -253,16 +257,16 @@ if __name__ == "__main__":
     else:
         try:
             func = sys.argv[1].lower()
-            if func == "wrangle_step1":
+            if func == "step1":
                 cases_sql_infile = sys.argv[2]
-                wrangle_step1(cases_sql_infile)
-            elif func == "wrangle_step2":
+                step1(cases_sql_infile)
+            elif func == "step2":
                 iteration_count = int(sys.argv[2])
-                wrangle_step2(iteration_count)
-            elif func == "wrangle_step3":
+                step2(iteration_count)
+            elif func == "step3":
                 cases_sql_infile = sys.argv[2]
                 iteration_infile = sys.argv[3]
-                wrangle_step3(cases_sql_infile, iteration_infile)
+                step3(cases_sql_infile, iteration_infile)
             else:
                 print_options("Error: invalid function: {}".format(func))
         except Exception as e:
