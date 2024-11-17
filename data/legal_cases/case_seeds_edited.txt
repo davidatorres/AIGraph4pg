@@ -1,0 +1,28 @@
+Original List:
+United Mutual Savings Bank v. Riebli  (1960)
+Javins v. First Nat'l  Realty Corp (1970)
+Foisy v.   Wyman (1973)
+Thomas v. Housing Authority   (1967)
+Jorgensen v. Massart  (1963)
+Martindale Clothing Co. v.   Spokane & Eastern Trust Co. (1914)
+Stuart v. Coldwell Banker (1987)
+Papac v.   City of Montesano (1956)
+Finley v. City of Puyallup (1957)
+Bach v. Sarich  (1968)
+
+Actual Values with IDs:
+1017660|United Mutual Savings Bank, Respondent, v. Arthur Riebli et al., Appellants, Washington Building Company, Respondent; Washington Camera Mart, Inc., Respondent, v. George Hoertrich, Jr., et al., Appellants
+12101563|First National Realty Corp. v. Javins et al.
+1095193|Carrie Thomas, Respondent, v. Housing Authority of the City of Bremerton, Appellant
+594079|Martindale Clothing Company, Respondent, v. Spokane & Eastern Trust Company, Appellant, T. H. Gowman, Defendant
+999494|Katherine Papac, Respondent, v. The City of Montesano, Appellant
+1005731|John Finley et al., Respondents, v. The City of Puyallup, Appellant
+1086651|Gerard Bach et al., Respondents, v. Steve Sarich, Jr., et al., Appellants
+1789753|Ronald D. Foisy, et al, Respondents, v. Richard Kent Wyman, Appellant
+
+No Citations:
+Ronald D. Foisy, et al, Respondents, v. Richard Kent Wyman, Appellant
+
+Not Found (bad JSON?):
+Jorgensen v. Massart  (1963)
+Stuart v. Coldwell Banker (1987)
