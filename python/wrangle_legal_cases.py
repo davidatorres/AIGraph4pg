@@ -121,7 +121,7 @@ def step1(cases_sql_infile: str):
 
 
 def initial_seeds():
-    infile = "../data/legal_cases/case_seeds_edited.txt"
+    infile = "data/legal_cases/case_seeds_edited.txt"
     lines = FS.read_lines(infile)
     seeds = dict()
     for line in lines:
