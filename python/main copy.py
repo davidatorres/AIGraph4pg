@@ -7,7 +7,6 @@ Usage:
     python main.py vector_search_similar_libraries flask 10
     python main.py vector_search_words word1 word2 word3 etc
     python main.py vector_search_words running calculator miles kilometers pace speed mph
-    
 Options:
   -h --help     Show this screen.
   --version     Show version.
