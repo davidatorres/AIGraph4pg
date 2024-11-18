@@ -131,6 +131,7 @@ Directory/File             Description
     - Rewrite the user docs for step-by-step tutorial focus
 
 - TBD: Generative AI for openCypher queries
+  - https://medium.com/neo4j/generating-cypher-queries-with-chatgpt-4-on-any-graph-schema-a57d7082a7e7
 - TBD: Utilize the azure_ai extension
 - TBD: Utilize the semantic ranker
 - TBD: DiskANN vector search
