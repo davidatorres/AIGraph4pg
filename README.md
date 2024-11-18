@@ -10,7 +10,7 @@ This project is similar to the [CosmosAIGraph](https://aka.ms/caig)
 project as it demonstrates the **GraphRAG** and **OmniRAG** patterns,
 but with **Azure Database for PostgreSQL** instead of **Azure Cosmos DB**.
 
-**At this time this project is in "BETA" status; not yet fully implemented and documented.  Final v1 is expected at the end of November 2024.**
+**At this time this project is in "BETA" status; not yet fully implemented and documented.  Final v1 is expected in early December 2024.**
 
 ## Specifically, this reference application demonstrates the following:
 
@@ -97,26 +97,38 @@ Directory/File             Description
 
 ## Project Roadmap
 
-- November 2024: Initial Release
-  - Completed:
-    - DB load process
+- November/December 2024: Initial Release
+  - Initial Completed Tasks with PyPI Libraries Dataset:
+    - DB load process for pypi libraries dataset
     - Vector search with pgvector 
     - Embedding generation with Azure OpenAI
     - Graph creation with Apache AGE
     - Web UI for traditional SQL queries
     - Web UI for openCypher queries
     - Web UI for vector search SQL queries
-    - Logo image creation
+    - Logo image creation, modified for tutorial tagline
+    - Wrangling of the cases.sql new dataset
+
+  - Pivot to new Legal Cases Dataset and Tutorial approach:
+    - Decision to abandon pypi libraries dataset in favor of legal cases
+      - Input file cases.sql is the new dataset
+    - Create a smaller subset for fast loading of the DB
+      - wrangle_legal_cases.py
+    - DDL for for legal cases dataset
+    - DB load process for legal cases dataset
+      - psql with infile approach
+    - Create cypher load statements for the subset of data
+    - UI
+      - Rework top-nav for left-to-right progression
+      - Include hyperlinks that explain each page/feature
+
   - TODO:
-    - Reduce/simplify the libraries dataset
-    - Improve perf of DB loading with psql \copy
     - Example JSONB queries
-    - GitHub LFS zipped data files
     - Richer openCypher queries for graph traversal
     - Web UI for graph queries with openCypher, and D3.js visualization
     - Docker image on DockerHub
     - Architecture Diagram, add to the About page
-    - Refine the initial/alpha set of user docs
+    - Rewrite the user docs for step-by-step tutorial focus
 
 - TBD: Generative AI for openCypher queries
 - TBD: Utilize the azure_ai extension
