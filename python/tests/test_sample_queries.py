@@ -7,7 +7,7 @@ from src.util.sample_queries import SampleQueries
 
 def test_read_queries():
     queries = SampleQueries.read_queries()
-    found_age_search_path = False
+    found_pg_extensions_query = False
     assert len(queries) > 3
     for q in queries:
         assert "name" in q
@@ -16,8 +16,8 @@ def test_read_queries():
         assert len(q["text"]) > 10
         logging.info(q)
 
-        if q["name"] == "SQL: PostgreSQL Extensions":
-            found_age_search_path = True
+        if q["name"] == "PG: PostgreSQL Extensions":
+            found_pg_extensions_query = True
             assert q["text"] == "SELECT oid, extname, extversion FROM pg_extension;"
 
-    assert found_age_search_path == True
+    assert found_pg_extensions_query == True

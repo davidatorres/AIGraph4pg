@@ -34,6 +34,7 @@ from src.services.ai_service import AiService
 from src.services.config_service import ConfigService
 from src.services.logging_level_service import LoggingLevelService
 from src.util.fs import FS
+from src.util.query_result_parser import QueryResultParser
 from src.util.sample_queries import SampleQueries
 
 # standard initialization
@@ -53,6 +54,56 @@ else:
             sys.platform
         )
     )
+
+POOL = None
+
+
+def get_database_connection_string():
+    db = ConfigService.postgresql_database()
+    user = ConfigService.postgresql_user()
+    password = ConfigService.postgresql_password()
+    host = ConfigService.postgresql_server()
+    port = ConfigService.postgresql_port()
+    conn_str = "host={} port={} dbname={} user={} password={}".format(
+        host, port, db, user, password
+    )
+    logging.info(
+        "get_database_connection_string: {} password=<omitted>".format(
+            conn_str.split("password")[0]
+        )
+    )
+    return conn_str
+
+
+async def initialize_async_services():
+    global POOL
+    try:
+        conn_str = get_database_connection_string()
+        POOL = psycopg_pool.AsyncConnectionPool(conninfo=conn_str, open=False)
+        logging.info("initialze_pool, pool created: {}".format(POOL))
+        await POOL.open()
+        await POOL.check()
+        logging.info("initialize_async_services, POOL opened")
+    except Exception as e:
+        logging.error("initialize_async_services - exception: {}".format(str(e)))
+        logging.error(traceback.format_exc())
+
+
+event_loop = None
+try:
+    event_loop = asyncio.get_running_loop()
+except:
+    pass
+logging.error("event_loop: {}".format(event_loop))
+
+if event_loop is not None:
+    # this path is for running in a Docker container with uvicorn
+    logging.error("asyncio event_loop is not None")
+    task = asyncio.create_task(initialize_async_services())
+else:
+    # this path is for running as a Python script
+    logging.error("asyncio event_loop is None")
+    asyncio.run(initialize_async_services())
 
 
 app = FastAPI()
@@ -108,7 +159,9 @@ async def get_about(req: Request):
 async def get_sample_queries(req: Request):
     return SampleQueries.read_queries()
 
+
 # ---
+
 
 @app.get("/query_console")
 async def get_query_console(req: Request):
@@ -125,11 +178,12 @@ async def post_query_console(req: Request):
     logging.info("/query_console form_data: {}".format(form_data))
     query_text = form_data.get("query_text").strip()
     view_data = query_console_view_data(query_text)
+    qrp = QueryResultParser()
 
     if len(query_text) > 10:
         logging.info("query_console - query_text: {}".format(query_text))
-        results_list : list[str] = list()
-        result_objects : list[dict] = list()
+        results_tuples: list[str] = list()
+        result_objects = list()
         start_time = time.time()
         try:
             conn_str = get_database_connection_string()
@@ -153,14 +207,21 @@ async def post_query_console(req: Request):
                     logging.info("query_console - stmt executed")
 
                     async for row in cursor:
-                        logging.info("row: {} {} {}".format(len(row), str(type(row)), row))
-                        result_objects.append(row)
-                        results_list.append(str(row))
-                    view_data["elapsed"] = "elapsed: {}".format(time.time() - start_time)
-                    view_data["results_message"] = "Results:"
-                    view_data["results"] = "\n".join(results_list)
+                        logging.info(
+                            "row: {} {} {}".format(len(row), str(type(row)), row)
+                        )
+                        result_objects.append(qrp.parse(row))
+                        results_tuples.append(str(row))
+                    view_data["elapsed"] = "elapsed: {}".format(
+                        time.time() - start_time
+                    )
+                    view_data["results_message"] = "Results as JSON and python tuples:"
+                    view_data["results"] = "\n".join(results_tuples)
                     view_data["query_text"] = query_text
-                    #write_query_results_to_file(view_data, result_objects)
+                    view_data["json_results"] = json.dumps(
+                        result_objects, sort_keys=False, indent=2
+                    )
+                    write_query_results_to_file(view_data, result_objects)
         except Exception as e:
             logging.critical((str(e)))
             view_data["results_message"] = "Error:"
@@ -171,38 +232,17 @@ async def post_query_console(req: Request):
         request=req, name="query_console.html", context=view_data
     )
 
+
 def write_query_results_to_file(view_data, result_objects):
-# TODO - extract this logic to a util class
+    """
+    Write the query results to a JSON file for visual inspection.
+    """
     try:
-        # write the results to a tmp file for visual inspection
-        fs_data, json_rows = dict(), list()
+        fs_data = dict()
         fs_data["query_text"] = view_data["query_text"]
         fs_data["results_message"] = view_data["results_message"]
         fs_data["elapsed"] = view_data["elapsed"]
-        fs_data["json_objects"] = []
         fs_data["result_objects"] = result_objects
-
-        for t in result_objects:
-            # t is a tup in various forms per the query
-            json_row = list()
-            json_rows.append(json_row)
-            if type(t) == tuple:
-                logging.warning("t is a TUPLE: {} {}".format(type(t), t))
-                for elem in t:
-                    if isinstance(elem, str):
-                        if "::" in elem:
-                            # jstr = elem.split("::")[0].strip()
-                            # obj = json.loads(elem.split("::")[0])
-                            # print("obj: {} {}".format(obj, type(obj)))
-                            json_row.append(elem)
-                        else:
-                            json_row.append(elem)
-                    else:
-                        json_row.append(elem)
-            else:
-                logging.warning("t is NOT A TUPLE: {} {}".format(type(t), t))
-                json_row.append(elem)
-        fs_data["json_objects"] = json_rows
     except Exception as e2:
         logging.warning(str(e2))
         logging.warning(traceback.format_exc())
@@ -211,7 +251,7 @@ def write_query_results_to_file(view_data, result_objects):
 
 def query_console_view_data(query_text=""):
     """
-    Return an initial dict with the fields necessary for the
+    Return an initial dict with all fields necessary for the
     query_console.html view.
     """
     view_data = dict()
@@ -220,8 +260,10 @@ def query_console_view_data(query_text=""):
     view_data["query_text"] = query_text
     view_data["results_message"] = ""
     view_data["results"] = ""
+    view_data["json_results"] = ""
     view_data["elapsed"] = ""
     return view_data
+
 
 # ---
 
@@ -354,6 +396,7 @@ async def execute_vector_search(embedding) -> list:
     try:
         conn_str = get_database_connection_string()
         sql = libraries_vector_search_sql(embedding)
+        # async with POOL.connection() as conn:
         async with await psycopg.AsyncConnection.connect(
             conn_str, autocommit=True
         ) as conn:
@@ -367,18 +410,47 @@ async def execute_vector_search(embedding) -> list:
     return result_list
 
 
-def get_database_connection_string():
-    db = ConfigService.postgresql_database()
-    user = ConfigService.postgresql_user()
-    password = ConfigService.postgresql_password()
-    host = ConfigService.postgresql_server()
-    port = ConfigService.postgresql_port()
-    conn_str = "host={} port={} dbname={} user={} password={}".format(
-        host, port, db, user, password
+# ---
+
+
+@app.get("/opencypher_gen_console")
+async def get_opencypher_gen_console(req: Request):
+    view_data = opencypher_gen_console_view_data()
+    return views.TemplateResponse(
+        request=req, name="opencypher_gen_console.html", context=view_data
     )
-    logging.info(
-        "get_database_connection_string: {} password=<omitted>".format(
-            conn_str.split("password")[0]
-        )
+
+
+@app.post("/opencypher_gen_console")
+async def post_opencypher_gen_console(req: Request):
+    form_data = await req.form()
+    logging.info("/opencypher_gen_console form_data: {}".format(form_data))
+    view_data = opencypher_gen_console_view_data()
+    natural_language = form_data.get("natural_language")
+    cypher = form_data.get("cypher")
+
+    if natural_language is not None:
+        view_data["natural_language"] = natural_language
+        # TODO - call the AI service to generate the Cypher
+
+    elif cypher is not None:
+        view_data["cypher"] = cypher
+        # TODO - execute the given cypher query
+
+    return views.TemplateResponse(
+        request=req, name="opencypher_gen_console.html", context=view_data
     )
-    return conn_str
+
+
+def opencypher_gen_console_view_data(query_text=""):
+    """
+    Return an initial dict with all fields necessary for the
+    opencypher_gen_console.html view.
+    """
+    view_data = dict()
+    view_data["natural_language"] = ""
+    view_data["cypher"] = ""
+    view_data["results_message"] = ""
+    view_data["results"] = ""
+    view_data["elapsed"] = ""
+    return view_data

@@ -135,9 +135,8 @@ async def list_pg_extensions_and_settings(pool: psycopg_pool.AsyncConnectionPool
 
 
 async def delete_define_table(
-        pool: psycopg_pool.AsyncConnectionPool,
-        ddl_filename: str,
-        tablename: str):
+    pool: psycopg_pool.AsyncConnectionPool, ddl_filename: str, tablename: str
+):
     ddl = FS.read(ddl_filename)
     logging.info(ddl)
     async with pool.connection() as conn:
@@ -147,7 +146,8 @@ async def delete_define_table(
     validation_queries = [
         "select * FROM information_schema.tables WHERE table_schema='public';",
         "select column_name, data_type, character_maximum_length FROM information_schema.columns WHERE table_name = '{}';".format(
-            tablename)
+            tablename
+        ),
     ]
     for validation_query in validation_queries:
         logging.info("==========")
@@ -244,9 +244,7 @@ def libraries_column_names(include_id=True):
     return names
 
 
-async def create_libraries_table_vector_index(
-    pool: psycopg_pool.AsyncConnectionPool
-):
+async def create_libraries_table_vector_index(pool: psycopg_pool.AsyncConnectionPool):
     # See https://learn.microsoft.com/en-us/azure/postgresql/flexible-server/how-to-optimize-performance-pgvector#indexing
 
     index_filename = "sql/libraries_ivfflat_index.sql"
@@ -331,7 +329,7 @@ async def vector_search_words(pool: psycopg_pool.AsyncConnectionPool):
 
 
 async def example_async_method(pool: psycopg_pool.AsyncConnectionPool):
-    """ This method is intended a sample for creating new async methods. """
+    """This method is intended a sample for creating new async methods."""
     await asyncio.sleep(0.1)
 
 
@@ -356,8 +354,7 @@ async def async_main():
             elif func == "list_pg_extensions_and_settings":
                 await list_pg_extensions_and_settings(pool)
             elif func == "delete_define_libraries_table":
-                await delete_define_table(
-                    pool, "sql/libraries_ddl.sql", "libraries")
+                await delete_define_table(pool, "sql/libraries_ddl.sql", "libraries")
             elif func == "create_libraries_table_vector_index":
                 await create_libraries_table_vector_index(pool)
             elif func == "vector_search_similar_libraries":
