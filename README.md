@@ -61,13 +61,12 @@ The application code can run either as a Python process, or a Docker image.
 Directory/File             Description
 
 ├── az                     az CLI deployment script for Azure PostgreSQL
-├── data
-│   ├── cypher             Generated statements, zipped, to load the Apache AGE graphs
-│   ├── openflights        Smaller dataset of US Air travel
-│   └── pypi               The primary curated dataset of 10,000+ Python libraries
 ├── docs                   User documentation, quick start, faq, etc
 └── python                 The Python-based implementation
     ├── config             Contains file sample_queries.txt, used by the Web UI
+    ├── data
+    │   ├── cypher         The graph dataset to load into Apache AGE within Azure PostgreSQL
+    │   └── legal_cases    The primary dataset for loading into Azure PostgreSQL relational table(s)
     ├── docker             Dockerfile and docker-compose.yml for local desktop execution
     ├── htmlcov            Unit test code coverage reports; git-ignored
     ├── ontologies         Unused, reference OWL file from the CosmosAIGraph project
