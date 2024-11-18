@@ -51,8 +51,9 @@ def test_parsing_reasonable_values():
     assert url == "https://static.case.law/wash-2d/45/cases/0071-01.json"
 
     data = CiteParser.values_counter.get_data()
-    expected_key = 'parsed | 45 Wn. (2d) 71^0071 | https://static.case.law/wash-2d/45/cases/0071-01.json'
+    expected_key = "parsed | 45 Wn. (2d) 71^0071 | https://static.case.law/wash-2d/45/cases/0071-01.json"
     assert expected_key in data.keys()
+
 
 def test_parsing_unexpected_and_odd_values():
     parser = CiteParser()
@@ -61,10 +62,12 @@ def test_parsing_unexpected_and_odd_values():
     assert parser.scrubbed_cite == "none"
     assert url == None
 
-    url = parser.parse('             ', None)
+    url = parser.parse("             ", None)
     assert parser.scrubbed_cite == ""
     assert url == None
 
-    url = parser.parse("this value(...) is UNexpected AND really() makes no sensE", None)
+    url = parser.parse(
+        "this value(...) is UNexpected AND really() makes no sensE", None
+    )
     assert parser.scrubbed_cite == "this value is unexpected and really makes no sense"
     assert url == None

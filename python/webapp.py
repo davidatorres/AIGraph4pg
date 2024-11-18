@@ -57,6 +57,7 @@ else:
 
 POOL = None
 
+
 def get_database_connection_string():
     db = ConfigService.postgresql_database()
     user = ConfigService.postgresql_user()
@@ -73,6 +74,7 @@ def get_database_connection_string():
     )
     return conn_str
 
+
 async def initialize_async_services():
     global POOL
     try:
@@ -85,6 +87,7 @@ async def initialize_async_services():
     except Exception as e:
         logging.error("initialize_async_services - exception: {}".format(str(e)))
         logging.error(traceback.format_exc())
+
 
 event_loop = None
 try:
@@ -100,7 +103,7 @@ if event_loop is not None:
 else:
     # this path is for running as a Python script
     logging.error("asyncio event_loop is None")
-    asyncio.run(initialize_async_services())    
+    asyncio.run(initialize_async_services())
 
 
 app = FastAPI()
@@ -156,7 +159,9 @@ async def get_about(req: Request):
 async def get_sample_queries(req: Request):
     return SampleQueries.read_queries()
 
+
 # ---
+
 
 @app.get("/query_console")
 async def get_query_console(req: Request):
@@ -177,7 +182,7 @@ async def post_query_console(req: Request):
 
     if len(query_text) > 10:
         logging.info("query_console - query_text: {}".format(query_text))
-        results_tuples : list[str] = list()
+        results_tuples: list[str] = list()
         result_objects = list()
         start_time = time.time()
         try:
@@ -202,15 +207,20 @@ async def post_query_console(req: Request):
                     logging.info("query_console - stmt executed")
 
                     async for row in cursor:
-                        logging.info("row: {} {} {}".format(len(row), str(type(row)), row))
+                        logging.info(
+                            "row: {} {} {}".format(len(row), str(type(row)), row)
+                        )
                         result_objects.append(qrp.parse(row))
                         results_tuples.append(str(row))
-                    view_data["elapsed"] = "elapsed: {}".format(time.time() - start_time)
+                    view_data["elapsed"] = "elapsed: {}".format(
+                        time.time() - start_time
+                    )
                     view_data["results_message"] = "Results as JSON and python tuples:"
                     view_data["results"] = "\n".join(results_tuples)
                     view_data["query_text"] = query_text
                     view_data["json_results"] = json.dumps(
-                        result_objects, sort_keys=False, indent=2)
+                        result_objects, sort_keys=False, indent=2
+                    )
                     write_query_results_to_file(view_data, result_objects)
         except Exception as e:
             logging.critical((str(e)))
@@ -253,6 +263,7 @@ def query_console_view_data(query_text=""):
     view_data["json_results"] = ""
     view_data["elapsed"] = ""
     return view_data
+
 
 # ---
 
@@ -385,7 +396,7 @@ async def execute_vector_search(embedding) -> list:
     try:
         conn_str = get_database_connection_string()
         sql = libraries_vector_search_sql(embedding)
-        #async with POOL.connection() as conn:
+        # async with POOL.connection() as conn:
         async with await psycopg.AsyncConnection.connect(
             conn_str, autocommit=True
         ) as conn:
@@ -398,7 +409,9 @@ async def execute_vector_search(embedding) -> list:
         logging.exception(e, stack_info=True, exc_info=True)
     return result_list
 
+
 # ---
+
 
 @app.get("/opencypher_gen_console")
 async def get_opencypher_gen_console(req: Request):
@@ -441,4 +454,3 @@ def opencypher_gen_console_view_data(query_text=""):
     view_data["results"] = ""
     view_data["elapsed"] = ""
     return view_data
-

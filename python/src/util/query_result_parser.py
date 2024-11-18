@@ -7,30 +7,31 @@ import logging
 import traceback
 import sys
 
+
 class QueryResultParser:
     """
-    Instances of this class parse the results of Azure PostgreSQL 
+    Instances of this class parse the results of Azure PostgreSQL
     and Apache AGE queries.
     """
 
     def __init__(self):
         self.data = {}
 
-    def parse(self, query_result:tuple) -> list:
+    def parse(self, query_result: tuple) -> list:
         """
         psycopg cursor.execute() returns a tuple of tuples, which
         this method parses into a list of objects.
         The Apache AGE tuples contain odd strings that contain
         string values like '::vertex' and '::edge' that are handled here.
         """
-        print('parse() {} {}'.format(query_result, str(type(query_result))))
+        print("parse() {} {}".format(query_result, str(type(query_result))))
         try:
             if isinstance(query_result, tuple):
                 if len(query_result) == 1:
                     elem = query_result[0]
-                    print('1elem: {} {}'.format(elem, str(type(elem))))
+                    print("1elem: {} {}".format(elem, str(type(elem))))
                     if isinstance(elem, str):
-                        colon_pair_count = elem.count('::')
+                        colon_pair_count = elem.count("::")
                         if colon_pair_count == 1:
                             return self.parse_single_colonpair_result(elem)
                         else:
@@ -40,12 +41,12 @@ class QueryResultParser:
                 else:
                     return list(query_result)
         except Exception as e:
-            logging.error('AgeResultParser - exception:', str(e))
+            logging.error("AgeResultParser - exception:", str(e))
             logging.error(traceback.format_exc())
         return None
 
     def parse_single_colonpair_result(self, s):
-        tokens = s.strip().split('::')
+        tokens = s.strip().split("::")
         leftpart = tokens[0]
         jstr = leftpart
         # if leftpart.startswith('{'):
@@ -57,7 +58,7 @@ class QueryResultParser:
             return json.loads(jstr)
         except Exception as e:
             return dict
-    
+
 
 # row: (14258, 'plpgsql', '1.0') 3 <class 'tuple'>
 # row: (24760, 'vector', '0.7.0') 3 <class 'tuple'>
